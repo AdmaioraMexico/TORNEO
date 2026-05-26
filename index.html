@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>B2AI Disruptive Challenge — Innovation Cup 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --g:#42F798;--g20:rgba(66,247,152,.20);--g10:rgba(66,247,152,.10);--g30:rgba(66,247,152,.30);
+  --blk:#000;--panel:#07110d;--steel:#87919a;--wh:#fff;
+  --cb:rgba(7,17,13,.92);--cbr:rgba(66,247,152,.18);--r:18px;--rl:26px;
+  --fd:'Bebas Neue',sans-serif;--fl:'Barlow Condensed',sans-serif;--fb:'Barlow',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--blk);color:var(--wh);font-family:var(--fb);font-size:15px;min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:5px;background:var(--panel)}::-webkit-scrollbar-thumb{background:var(--g20);border-radius:3px}
+.nav{position:sticky;top:0;z-index:200;background:rgba(0,0,0,.93);backdrop-filter:blur(20px);border-bottom:1px solid var(--cbr);padding:0 16px}
+.nav-inner{max-width:1300px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:58px;gap:12px}
+.logo{font-family:var(--fd);font-size:19px;letter-spacing:.06em;color:var(--wh);white-space:nowrap;flex-shrink:0}
+.logo em{color:var(--g);font-style:normal}
+.tabs{display:flex;gap:3px;flex-wrap:wrap}
+.tab{padding:7px 16px;font-family:var(--fl);font-weight:700;font-size:12px;letter-spacing:.09em;text-transform:uppercase;background:transparent;color:var(--steel);border:1px solid transparent;border-radius:999px;cursor:pointer;transition:all .2s}
+.tab:hover{color:var(--wh)}.tab.on{color:var(--g);border-color:var(--g30);background:var(--g10)}
+.ldot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--g);margin-right:5px;animation:pdot 2s infinite;vertical-align:middle}
+.nav-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.nav-user{font-family:var(--fl);font-size:12px;font-weight:700;color:var(--g);letter-spacing:.06em;white-space:nowrap;display:none}
+.overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.88);z-index:500;align-items:center;justify-content:center}
+.overlay.vis{display:flex}
+.login-modal{background:var(--cb);border:1px solid var(--cbr);border-radius:var(--rl);padding:36px;width:100%;max-width:400px;margin:20px}
+.lm-title{font-family:var(--fd);font-size:32px;color:var(--wh);letter-spacing:.04em;margin-bottom:6px}
+.lm-sub{font-family:var(--fl);font-size:13px;color:var(--steel);margin-bottom:24px;letter-spacing:.04em}
+.pg{display:none}.pg.on{display:block}
+.hero{padding:68px 20px 48px;text-align:center;position:relative;overflow:hidden;background:radial-gradient(ellipse 70% 50% at 50% 0%,rgba(66,247,152,.07) 0%,transparent 70%)}
+.hero::before{content:'INNOVATION CUP 2026';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:var(--fd);font-size:clamp(60px,14vw,180px);color:rgba(66,247,152,.03);white-space:nowrap;pointer-events:none;user-select:none}
+.kicker{font-family:var(--fl);font-size:12px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--g);margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:10px}
+.kicker::before,.kicker::after{content:'';flex:0 0 34px;height:1px;background:var(--g30)}
+.htitle{font-family:var(--fd);font-size:clamp(36px,8vw,88px);line-height:.92;color:var(--wh);margin-bottom:14px}
+.htitle .ac{color:var(--g)}
+.hsub{font-family:var(--fl);font-size:17px;color:var(--steel);letter-spacing:.04em;margin-bottom:40px}
+.hsub strong{color:var(--wh);font-weight:600}
+.srow{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;max-width:860px;margin:0 auto 40px}
+.sc{background:var(--cb);border:1px solid var(--cbr);border-radius:var(--r);padding:20px 14px;text-align:center}
+.sv{font-family:var(--fd);font-size:42px;line-height:1;color:var(--g);display:block;margin-bottom:4px}
+.sl{font-family:var(--fl);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--steel)}
+.ctas{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:11px 26px;font-family:var(--fl);font-weight:700;font-size:13px;letter-spacing:.08em;text-transform:uppercase;border:none;cursor:pointer;border-radius:999px;transition:all .22s;text-decoration:none;white-space:nowrap}
+.bp{background:var(--g);color:var(--blk)}.bp:hover{background:#5bffa8;box-shadow:0 0 22px rgba(66,247,152,.5);transform:translateY(-1px)}
+.bo{background:transparent;color:var(--g);border:1px solid var(--g30)}.bo:hover{background:var(--g10);border-color:var(--g)}
+.bg{background:transparent;color:var(--steel);border:1px solid rgba(135,145,154,.3)}.bg:hover{color:var(--wh);border-color:var(--steel)}
+.bd{background:transparent;color:#ff5555;border:1px solid rgba(255,85,85,.3)}.bd:hover{background:rgba(255,85,85,.1)}
+.bw{background:rgba(255,255,255,.07);color:var(--wh);border:1px solid rgba(255,255,255,.15)}.bw:hover{background:rgba(255,255,255,.12)}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none!important}
+.blg{padding:14px 36px;font-size:15px}.bsm{padding:6px 14px;font-size:11px}
+.bsec{padding:0;background:radial-gradient(ellipse 80% 60% at 50% 50%,rgba(66,247,152,.05) 0%,transparent 70%);min-height:100vh;display:flex;flex-direction:column}
+.shdr{text-align:center;margin-bottom:36px}
+.skick{font-family:var(--fl);font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--g);margin-bottom:8px}
+.stit{font-family:var(--fd);font-size:clamp(24px,5vw,50px);color:var(--wh);letter-spacing:.02em}
+.bwrap{overflow-x:auto;padding:0 24px 24px}
+.bwrap::-webkit-scrollbar{height:5px}.bwrap::-webkit-scrollbar-thumb{background:var(--g20);border-radius:3px}
+.mc{background:var(--cb);border:1px solid var(--cbr);border-radius:var(--r);overflow:hidden;transition:border-color .3s,box-shadow .3s}
+.mc.mopen{border-color:rgba(66,247,152,.65);box-shadow:0 0 16px rgba(66,247,152,.15)}
+.mc.mfin{border-radius:var(--rl);border-color:rgba(66,247,152,.35)}
+.mhdr{display:flex;align-items:center;justify-content:space-between;padding:7px 12px;background:rgba(0,0,0,.5);border-bottom:1px solid var(--cbr)}
+.mid{font-family:var(--fl);font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--steel)}
+.badge{display:inline-block;padding:2px 8px;border-radius:999px;font-family:var(--fl);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+.bpend{background:rgba(135,145,154,.18);color:var(--steel)}
+.bopen{background:rgba(66,247,152,.14);color:var(--g);border:1px solid var(--g30)}
+.bclos{background:rgba(255,255,255,.07);color:rgba(255,255,255,.4)}
+.mteam{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;gap:8px;transition:background .2s}
+.mteam:first-child{border-bottom:1px solid rgba(255,255,255,.06)}
+.mteam.mwin{background:rgba(66,247,152,.09)}
+.mname{font-family:var(--fl);font-size:13px;font-weight:600;color:var(--wh);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.mname.tbd{color:var(--steel);font-weight:400;font-style:italic}
+.mscore{font-family:var(--fd);font-size:19px;color:var(--g);min-width:22px;text-align:right}
+.mscore.z{color:var(--steel)}
+.mbar{padding:5px 12px;background:rgba(66,247,152,.11);border-top:1px solid var(--g30);font-family:var(--fl);font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--g);display:none}
+.mbar.vis{display:block}
+.ticon{width:60px;height:60px;border-radius:50%;background:radial-gradient(circle,rgba(66,247,152,.22) 0%,rgba(66,247,152,.04) 70%);border:2px solid var(--g30);display:flex;align-items:center;justify-content:center;font-size:26px;animation:tpulse 3s infinite;box-shadow:0 0 24px rgba(66,247,152,.2)}
+.tlab{font-family:var(--fd);font-size:11px;letter-spacing:.22em;color:var(--g);text-align:center}
+.chname{font-family:var(--fd);font-size:15px;color:var(--g);text-align:center;letter-spacing:.05em;text-shadow:0 0 16px rgba(66,247,152,.5);max-width:220px;word-break:break-word}
+.tpwrap{margin-top:28px;text-align:center}
+.tplab{font-family:var(--fl);font-size:11px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--steel);margin-bottom:10px}
+.tpcard{display:inline-block;max-width:240px;width:100%}
+.col-lbl{font-family:var(--fl);font-size:11px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--steel);text-align:center}
+.col-lbl.gc{color:var(--g)}
+.fsec,.jsec,.asec{background:var(--blk);padding:56px 20px}
+.fbox{max-width:700px;margin:0 auto;background:var(--cb);border:1px solid var(--cbr);border-radius:var(--rl);padding:34px}
+.jgrid{display:grid;grid-template-columns:1fr 1fr;gap:26px;max-width:960px;margin:0 auto;align-items:start}
+.pbox{background:var(--cb);border:1px solid var(--cbr);border-radius:var(--rl);padding:26px}
+.ptit{font-family:var(--fd);font-size:24px;color:var(--wh);margin-bottom:18px}
+.oml{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.omb{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--panel);border:1px solid var(--cbr);border-radius:12px;cursor:pointer;font-family:var(--fl);font-size:12px;font-weight:700;color:var(--wh);letter-spacing:.04em;transition:all .2s}
+.omb:hover,.omb.on{border-color:var(--g);background:var(--g10);color:var(--g)}
+.omb.voted{border-color:rgba(66,247,152,.4);background:rgba(66,247,152,.05)}
+.tvbs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.tvb{padding:16px 10px;border-radius:14px;background:var(--panel);border:2px solid var(--cbr);cursor:pointer;text-align:center;transition:all .2s;font-family:var(--fl);font-size:13px;font-weight:700;color:var(--wh)}
+.tvb:hover,.tvb.on{border-color:var(--g);color:var(--g);background:var(--g10);box-shadow:0 0 12px rgba(66,247,152,.18)}
+.tvb .tvsub{font-size:10px;color:var(--steel);margin-bottom:4px;letter-spacing:.08em}
+.jwel{margin-top:18px;padding-top:18px;border-top:1px solid var(--cbr)}
+.jname{font-family:var(--fd);font-size:22px;color:var(--g)}
+.abox{max-width:860px;margin:0 auto;background:var(--cb);border:1px solid var(--cbr);border-radius:var(--rl);padding:26px}
+.atabs{display:flex;gap:6px;margin-bottom:24px;flex-wrap:wrap}
+.atab{padding:9px 20px;font-family:var(--fl);font-weight:700;font-size:12px;letter-spacing:.09em;text-transform:uppercase;background:transparent;color:var(--steel);border:1px solid rgba(135,145,154,.2);border-radius:999px;cursor:pointer;transition:all .2s}
+.atab:hover{color:var(--wh)}.atab.on{color:var(--g);border-color:var(--g30);background:var(--g10)}
+.awel{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:rgba(66,247,152,.06);border:1px solid var(--g20);border-radius:14px;margin-bottom:20px;flex-wrap:wrap;gap:10px}
+.awel-name{font-family:var(--fd);font-size:20px;color:var(--g);letter-spacing:.04em}
+.awel-sub{font-family:var(--fl);font-size:11px;color:var(--steel);margin-top:2px}
+.field{margin-bottom:17px}
+.field label{display:block;margin-bottom:6px;font-family:var(--fl);font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--steel)}
+.fi{width:100%;background:var(--panel);border:1px solid rgba(135,145,154,.22);border-radius:12px;padding:10px 13px;color:var(--wh);font-family:var(--fb);font-size:14px;outline:none;transition:border-color .2s}
+.fi:focus{border-color:var(--g);box-shadow:0 0 0 3px var(--g10)}
+.fi:disabled{opacity:.4;cursor:not-allowed}
+select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath fill='%2342F798' d='M5 6L0 0h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;background-size:9px;cursor:pointer}
+select.fi option{background:#0d1f17;color:var(--wh)}
+.team-list{display:flex;flex-direction:column;gap:8px;max-height:420px;overflow-y:auto;margin-bottom:16px;padding-right:4px}
+.team-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--panel);border:1px solid rgba(135,145,154,.15);border-radius:12px;cursor:pointer;transition:all .2s}
+.team-item:hover{border-color:var(--g20)}.team-item.selected{border-color:var(--g30);background:rgba(66,247,152,.06)}
+.team-item input[type=checkbox]{width:16px;height:16px;accent-color:var(--g);flex-shrink:0;cursor:pointer}
+.sel-bar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:rgba(66,247,152,.06);border:1px solid var(--g20);border-radius:12px;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+.sel-count{font-family:var(--fd);font-size:22px;color:var(--g)}
+.qf-row{display:grid;grid-template-columns:70px 1fr 36px 1fr;gap:10px;align-items:center;margin-bottom:12px;padding:14px;background:var(--panel);border:1px solid rgba(135,145,154,.15);border-radius:14px}
+.qf-label{font-family:var(--fd);font-size:18px;color:var(--g)}
+.vs-lbl{font-family:var(--fd);font-size:14px;color:var(--steel);text-align:center}
+.ctrl-match{background:var(--panel);border:1px solid rgba(135,145,154,.18);border-radius:14px;padding:16px;margin-bottom:12px}
+.ctrl-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.ctrl-badge{font-family:var(--fd);font-size:18px;color:var(--g);margin-right:8px}
+.ctrl-winner{font-family:var(--fl);font-size:12px;font-weight:700;color:var(--g);letter-spacing:.06em}
+.ctrl-names{display:grid;grid-template-columns:1fr 28px 1fr auto;gap:8px;align-items:center;margin-bottom:12px}
+.ctrl-vs{font-family:var(--fd);font-size:12px;color:var(--steel);text-align:center}
+.adv-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.adv-lbl{font-family:var(--fl);font-size:10px;color:var(--steel);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}
+.msg{padding:12px 16px;border-radius:12px;font-family:var(--fl);font-size:13px;font-weight:600;letter-spacing:.04em;margin-top:12px;display:none}
+.msg.on{display:block}
+.ms{background:rgba(66,247,152,.11);border:1px solid var(--g30);color:var(--g)}
+.me{background:rgba(255,85,85,.1);border:1px solid rgba(255,85,85,.3);color:#ff6b6b}
+.mi{background:rgba(135,145,154,.1);border:1px solid rgba(135,145,154,.28);color:var(--steel)}
+.foot{border-top:1px solid var(--cbr);padding:26px 20px;text-align:center}
+.fbr{font-family:var(--fd);font-size:16px;letter-spacing:.06em;color:var(--steel);margin-bottom:6px}
+.fbr em{color:var(--g);font-style:normal}
+.fmeta{font-family:var(--fl);font-size:11px;color:rgba(135,145,154,.5);letter-spacing:.08em}
+#lupd{font-family:var(--fl);font-size:10px;color:rgba(135,145,154,.35);margin-top:5px}
+.cont{max-width:1300px;margin:0 auto;padding:0 20px}
+.nostyle{font-family:var(--fl);font-size:13px;color:var(--steel);padding:10px 0}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid var(--g30);border-top-color:var(--g);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:5px}
+.bload{text-align:center;padding:60px 20px;font-family:var(--fl);font-size:13px;color:var(--steel)}
+.divider{height:1px;background:var(--cbr);margin:16px 0}
+@keyframes pdot{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(66,247,152,.4)}50%{opacity:.7;box-shadow:0 0 0 5px rgba(66,247,152,0)}}
+@keyframes tpulse{0%,100%{box-shadow:0 0 24px rgba(66,247,152,.2),0 0 0 0 rgba(66,247,152,.25)}50%{box-shadow:0 0 40px rgba(66,247,152,.36),0 0 0 10px rgba(66,247,152,0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:900px){.srow{grid-template-columns:repeat(2,1fr)}.jgrid{grid-template-columns:1fr}.tabs{gap:2px}.tab{padding:6px 11px;font-size:11px}.qf-row{grid-template-columns:56px 1fr 28px 1fr}.ctrl-names{grid-template-columns:1fr 20px 1fr}}
+@media(max-width:600px){.ctas{flex-direction:column;align-items:center}.blg{width:100%;justify-content:center}}
+</style>
+</head>
+<body>
+<script>
+/* ══ CONFIG ══ */
+const CFG={
+  BACKEND_URL:'https://script.google.com/macros/s/AKfycbwl5l-UP_mbBdkHnqSYGKrdPl9elcT-MLau5HaOufuk87S5cayTukoHYNjvI0h4BYQcug/exec',
+  REFRESH_INTERVAL:7000,
+  EVENT_DATE:'27 Mayo 2026',
+  EVENT_VENUE:'Cámara de Diputados · CDMX',
+};
+
+/* ── Estado ── */
+let STATE=null;
+let USER_ROLE='public',USER_NAME='',USER_TOKEN='';
+let JUROR=null,SEL_MATCH=null,SEL_TEAM=null;
+let VOTED_MATCHES=new Set();
+let ADMIN_TOKEN_VAL='',ADMIN_NAME='',ADMIN_TEAMS=[];
+
+/* ── Helpers ── */
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/</g,'&lt;');}
+function showMsg(id,html,cls){
+  const el=document.getElementById(id);if(!el)return;
+  el.innerHTML=html;
+  el.className='msg'+(cls?' '+cls:'')+(html?' on':'');
+}
+function showTab(name){
+  document.querySelectorAll('.pg').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));
+  const sec=document.getElementById('pg-'+name);if(sec)sec.classList.add('on');
+  const btn=[...document.querySelectorAll('.tab')].find(b=>b.dataset.tab===name);
+  if(btn)btn.classList.add('on');
+}
+
+/* ── API ── */
+async function apiCall(params){
+  const p=new URLSearchParams({...params,_:Date.now()});
+  const r=await fetch(CFG.BACKEND_URL+'?'+p.toString(),{cache:'no-store'});
+  if(!r.ok)throw new Error('HTTP '+r.status);
+  return r.json();
+}
+
+/* ── Load & render ── */
+async function load(){
+  try{
+    const s=await apiCall({action:'getState'});
+    STATE=s;
+    if(STATE.matches){
+      const seen=new Set();
+      STATE.matches=STATE.matches.filter(m=>{if(!seen.has(m.matchId)){seen.add(m.matchId);return true;}return false;});
+    }
+    renderAll();
+  }catch(e){console.warn('load error:',e);}
+}
+function renderAll(){
+  if(!STATE)return;
+  renderStats();renderBracket();renderOpenMatches();
+  if(ADMIN_TOKEN_VAL){
+    const ct=document.getElementById('atab-control');
+    if(ct&&ct.style.display!=='none')renderControl();
+  }
+  const el=document.getElementById('lupd');
+  if(el)el.textContent='Actualizado: '+new Date().toLocaleTimeString('es-MX');
+}
+
+/* ── Stats ── */
+function renderStats(){
+  anim('st-teams',STATE.teams?STATE.teams.length:0);
+  anim('st-votes',STATE.votesCount||0);
+  anim('st-jurors',STATE.jurorsCount||0);
+  const ch=STATE.champion||(STATE.config&&STATE.config.champion)||null;
+  const el=document.getElementById('st-champ');
+  if(el){el.textContent=ch||'—';el.style.fontSize=ch?'14px':'42px';}
+}
+function anim(id,target){
+  const el=document.getElementById(id);if(!el)return;
+  const start=parseInt(el.textContent)||0;if(start===target)return;
+  const steps=18,inc=(target-start)/steps;let cur=start,i=0;
+  const t=setInterval(()=>{cur+=inc;i++;el.textContent=Math.round(cur);if(i>=steps){el.textContent=target;clearInterval(t);}},28);
+}
+
+/* ── Bracket ── */
+function matchHTML(m,fin=false){
+  if(!m)return'<div class="mc" style="opacity:.22;height:88px;"></div>';
+  const st=m.status.toLowerCase();
+  const wA=m.winner&&m.teamA&&m.winner===m.teamA.teamId;
+  const wB=m.winner&&m.teamB&&m.winner===m.teamB.teamId;
+  const wName=wA?(m.teamA.name):wB?(m.teamB.name):'';
+  const tbd=!m.teamA&&!m.teamB;
+  const sA=m.scoreA||0,sB=m.scoreB||0;
+  return`<div class="mc ${st==='open'?'mopen':''} ${fin?'mfin':''}">
+    <div class="mhdr"><span class="mid">${m.matchId}</span><span class="badge b${st}">${m.status}</span></div>
+    <div class="mteam ${wA?'mwin':''}"><span class="mname ${tbd?'tbd':''}">${m.teamA?esc(m.teamA.name):'Por definir'}</span><span class="mscore ${sA===0?'z':''}">${sA}</span></div>
+    <div class="mteam ${wB?'mwin':''}"><span class="mname ${tbd?'tbd':''}">${m.teamB?esc(m.teamB.name):'Por definir'}</span><span class="mscore ${sB===0?'z':''}">${sB}</span></div>
+    <div class="mbar ${wName?'vis':''}">✦ GANADOR: ${esc(wName)}</div>
+  </div>`;
+}
+function renderBracket(){
+  const ms=STATE&&STATE.matches;
+  const ld=document.getElementById('bload'),inn=document.getElementById('binn');
+  if(!ms||!ms.length){
+    ld.style.display='';ld.innerHTML='<div style="font-family:var(--fl);color:var(--steel)">El administrador aún no ha creado el bracket.</div>';
+    inn.style.display='none';return;
+  }
+  ld.style.display='none';inn.style.display='';
+  const byId={};ms.forEach(m=>{byId[m.matchId]=m;});
+  const H=100,QW=240,SW=240,FW=260,CN=64,TROPHY=90,GAP=14;
+  const y1=0,y2=148,y3=320,y4=468;
+  const m1=y1+H/2,m2=y2+H/2,m3=y3+H/2,m4=y4+H/2;
+  const sm1=(m1+m2)/2,sy1=sm1-H/2,sm2=(m3+m4)/2,sy2=sm2-H/2;
+  const fm=(sm1+sm2)/2,finCtop=fm-(TROPHY+GAP+H/2);
+  const qx=0,ex1=QW+CN/2,sx=QW+CN,ex2=sx+SW+CN/2,fx=sx+SW+CN;
+  const TW=fx+FW+4,TH=y4+H+8,C='rgba(66,247,152,0.35)';
+  const paths=[
+    `M ${QW} ${m1} L ${ex1} ${m1} L ${ex1} ${sm1} L ${sx} ${sm1}`,
+    `M ${QW} ${m2} L ${ex1} ${m2} L ${ex1} ${sm1} L ${sx} ${sm1}`,
+    `M ${sx+SW} ${sm1} L ${ex2} ${sm1} L ${ex2} ${fm} L ${fx} ${fm}`,
+    `M ${QW} ${m3} L ${ex1} ${m3} L ${ex1} ${sm2} L ${sx} ${sm2}`,
+    `M ${QW} ${m4} L ${ex1} ${m4} L ${ex1} ${sm2} L ${sx} ${sm2}`,
+    `M ${sx+SW} ${sm2} L ${ex2} ${sm2} L ${ex2} ${fm} L ${fx} ${fm}`,
+  ];
+  const champion=STATE.champion||(STATE.config&&STATE.config.champion)||null;
+  inn.innerHTML=`
+  <div style="display:flex;width:${TW}px;margin:0 auto 14px">
+    <div class="col-lbl" style="width:${QW}px">Cuartos de Final</div>
+    <div style="width:${CN}px"></div>
+    <div class="col-lbl" style="width:${SW}px">Semifinales</div>
+    <div style="width:${CN}px"></div>
+    <div class="col-lbl gc" style="width:${FW}px">Gran Final</div>
+  </div>
+  <div style="position:relative;width:${TW}px;height:${TH}px;margin:0 auto">
+    <svg width="${TW}" height="${TH}" style="position:absolute;top:0;left:0;pointer-events:none;overflow:visible">
+      ${paths.map(d=>`<path d="${d}" fill="none" stroke="${C}" stroke-width="2" stroke-linecap="round"/>`).join('')}
+    </svg>
+    <div style="position:absolute;top:${y1}px;left:${qx}px;width:${QW}px">${matchHTML(byId['QF1'])}</div>
+    <div style="position:absolute;top:${y2}px;left:${qx}px;width:${QW}px">${matchHTML(byId['QF2'])}</div>
+    <div style="position:absolute;top:${y3}px;left:${qx}px;width:${QW}px">${matchHTML(byId['QF3'])}</div>
+    <div style="position:absolute;top:${y4}px;left:${qx}px;width:${QW}px">${matchHTML(byId['QF4'])}</div>
+    <div style="position:absolute;top:${sy1}px;left:${sx}px;width:${SW}px">${matchHTML(byId['SF1'])}</div>
+    <div style="position:absolute;top:${sy2}px;left:${sx}px;width:${SW}px">${matchHTML(byId['SF2'])}</div>
+    <div style="position:absolute;top:${finCtop}px;left:${fx}px;width:${FW}px;display:flex;flex-direction:column;align-items:center;gap:${GAP}px">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:8px;height:${TROPHY}px;justify-content:center">
+        <div class="ticon">🏆</div><div class="tlab">INNOVATION CUP</div>
+        ${champion?`<div class="chname">${esc(champion)}</div>`:''}
+      </div>
+      <div style="width:100%">${matchHTML(byId['FIN'],true)}</div>
+    </div>
+  </div>`;
+  const tpw=document.getElementById('tpwrap'),tpc=document.getElementById('tpcard');
+  const tp=byId['TPL'];
+  if(tp&&(tp.teamA||tp.teamB)){tpw.style.display='';tpc.innerHTML=matchHTML(tp);}
+  else tpw.style.display='none';
+}
+
+/* ── Jurado ── */
+function renderOpenMatches(){
+  const list=document.getElementById('oml');if(!list)return;
+  const open=STATE&&STATE.matches?STATE.matches.filter(m=>m.status==='OPEN'&&m.teamA&&m.teamB):[];
+  if(!open.length){
+    list.innerHTML='<div class="nostyle">No hay matches abiertos ahora.</div>';
+    const vf=document.getElementById('vform');if(vf)vf.style.display='none';return;
+  }
+  list.innerHTML=open.map(m=>{
+    const voted=VOTED_MATCHES.has(m.matchId);
+    const active=SEL_MATCH&&SEL_MATCH.matchId===m.matchId;
+    return`<button class="omb ${active?'on':''} ${voted?'voted':''}" data-mid="${esc(m.matchId)}" onclick="selMatchBtn(this)">
+      <span>${esc(m.matchId)} — ${esc(m.teamA.name)} vs ${esc(m.teamB.name)}</span>
+      <div style="display:flex;align-items:center;gap:6px">
+        ${voted?'<span style="color:var(--g);font-size:18px">✓</span>':''}
+        <span class="badge bopen">OPEN</span>
+      </div>
+    </button>`;
+  }).join('');
+}
+function selMatchBtn(btn){selMatch(btn.dataset.mid);}
+function selMatch(id){
+  const m=STATE.matches.find(x=>x.matchId===id);if(!m)return;
+  SEL_MATCH=m;SEL_TEAM=null;
+  renderOpenMatches();
+  document.getElementById('vform').style.display='';
+  renderVoteButtons();showMsg('vmsg','','');
+}
+function selTeam(t){SEL_TEAM=t;renderVoteButtons();}
+function renderVoteButtons(){
+  if(!SEL_MATCH)return;
+  document.getElementById('tvbs').innerHTML=`
+    <button class="tvb ${SEL_TEAM==='A'?'on':''}" onclick="selTeam('A')">
+      <div class="tvsub">EQUIPO A</div><div>${esc(SEL_MATCH.teamA.name)}</div>
+    </button>
+    <button class="tvb ${SEL_TEAM==='B'?'on':''}" onclick="selTeam('B')">
+      <div class="tvsub">EQUIPO B</div><div>${esc(SEL_MATCH.teamB.name)}</div>
+    </button>`;
+}
+async function handleVote(){
+  if(!JUROR){showMsg('vmsg','Primero verifica tu token.','me');return;}
+  if(!SEL_MATCH){showMsg('vmsg','Selecciona un match.','me');return;}
+  if(!SEL_TEAM){showMsg('vmsg','Selecciona un equipo.','me');return;}
+  const tv=SEL_TEAM==='A'?SEL_MATCH.teamA:SEL_MATCH.teamB;
+  showMsg('vmsg','<span class="spin"></span> Registrando...','mi');
+  try{
+    const r=await apiCall({action:'castVote',jurorToken:JUROR.token,matchId:SEL_MATCH.matchId,
+      teamId:tv.teamId,confidence:document.getElementById('vconf').value,
+      comments:document.getElementById('vcom').value.trim()});
+    if(r.ok){
+      VOTED_MATCHES.add(SEL_MATCH.matchId);
+      showMsg('vmsg','✓ Voto registrado para '+SEL_MATCH.matchId+'.','ms');
+      SEL_MATCH=null;SEL_TEAM=null;
+      document.getElementById('vform').style.display='none';
+      document.getElementById('vcom').value='';load();
+    }else showMsg('vmsg',r.message||'Error al votar.','me');
+  }catch(e){showMsg('vmsg','Error: '+e.message,'me');}
+}
+async function handleJurorVerify(){
+  const tok=document.getElementById('jtok').value.trim();
+  if(!tok){showMsg('jmsg','Ingresa tu token.','me');return;}
+  showMsg('jmsg','<span class="spin"></span> Verificando...','mi');
+  try{
+    const r=await apiCall({action:'verifyJuror',token:tok});
+    if(r.ok){
+      JUROR={token:tok,name:r.jurorName};
+      if(USER_ROLE==='public')setRole('juror',r.jurorName,tok);
+      showMsg('jmsg','','');
+      document.getElementById('jwel').style.display='';
+      document.getElementById('jname').textContent=r.jurorName;
+    }else{showMsg('jmsg',r.message||'Token inválido.','me');JUROR=null;document.getElementById('jwel').style.display='none';}
+  }catch(e){showMsg('jmsg','Error: '+e.message,'me');}
+}
+
+/* ── Login & Roles ── */
+function showLoginOverlay(){document.getElementById('login-overlay').classList.add('vis');setTimeout(()=>document.getElementById('gtok').focus(),100);}
+function hideLoginOverlay(){document.getElementById('login-overlay').classList.remove('vis');document.getElementById('gtok').value='';showMsg('lmsg','','');}
+async function handleGlobalLogin(){
+  const tok=document.getElementById('gtok').value.trim();
+  if(!tok){showMsg('lmsg','Ingresa tu token de acceso.','me');return;}
+  showMsg('lmsg','<span class="spin"></span> Verificando...','mi');
+  try{
+    const r=await apiCall({action:'adminGetTeams',token:tok});
+    if(r.ok){
+      ADMIN_TOKEN_VAL=tok;ADMIN_NAME=r.adminName||'Admin';ADMIN_TEAMS=r.teams||[];
+      setRole('admin',r.adminName,tok);
+      document.getElementById('admin-login-box').style.display='none';
+      document.getElementById('admin-panel').style.display='';
+      document.getElementById('awel-name').textContent=r.adminName;
+      document.getElementById('awel-sub').textContent=(r.teams||[]).length+' PyMEs registradas';
+      hideLoginOverlay();
+      showTab('admin');
+      // Esperar a que el DOM esté visible antes de activar la primera pestaña
+      setTimeout(()=>showAdminTab('pymes'),100);
+      return;
+    }
+  }catch(e){}
+  try{
+    const r=await apiCall({action:'verifyJuror',token:tok});
+    if(r.ok){
+      setRole('juror',r.jurorName,tok);
+      JUROR={token:tok,name:r.jurorName};
+      document.getElementById('jtok').value=tok;
+      document.getElementById('jwel').style.display='';
+      document.getElementById('jname').textContent=r.jurorName;
+      hideLoginOverlay();showTab('jury');return;
+    }
+  }catch(e){}
+  showMsg('lmsg','Token no reconocido. Verifica tu código.','me');
+}
+function setRole(role,name,token){
+  USER_ROLE=role;USER_NAME=name;USER_TOKEN=token;
+  const juryTab=document.getElementById('nav-jury');
+  const adminTab=document.getElementById('nav-admin');
+  const loginBtn=document.getElementById('nav-login-btn');
+  const logoutBtn=document.getElementById('nav-logout-btn');
+  const userBadge=document.getElementById('nav-user');
+  if(role==='public'){
+    juryTab&&(juryTab.style.display='none');adminTab&&(adminTab.style.display='none');
+    loginBtn&&(loginBtn.style.display='');logoutBtn&&(logoutBtn.style.display='none');
+    userBadge&&(userBadge.style.display='none');
+  }else if(role==='juror'){
+    juryTab&&(juryTab.style.display='');adminTab&&(adminTab.style.display='none');
+    loginBtn&&(loginBtn.style.display='none');logoutBtn&&(logoutBtn.style.display='');
+    userBadge&&(userBadge.style.display='');if(userBadge)userBadge.textContent='🟢 '+name;
+  }else if(role==='admin'){
+    juryTab&&(juryTab.style.display='');adminTab&&(adminTab.style.display='');
+    loginBtn&&(loginBtn.style.display='none');logoutBtn&&(logoutBtn.style.display='');
+    userBadge&&(userBadge.style.display='');if(userBadge)userBadge.textContent='⚡ '+name;
+  }
+}
+function logout(){
+  USER_ROLE='public';USER_NAME='';USER_TOKEN='';
+  JUROR=null;SEL_MATCH=null;SEL_TEAM=null;VOTED_MATCHES=new Set();
+  ADMIN_TOKEN_VAL='';ADMIN_NAME='';ADMIN_TEAMS=[];
+  setRole('public','','');showTab('bracket');
+  document.getElementById('admin-login-box').style.display='';
+  document.getElementById('admin-panel').style.display='none';
+  document.getElementById('jtok').value='';
+  document.getElementById('jwel').style.display='none';
+}
+
+/* ── Admin ── */
+function showAdminTab(name){
+  // null-safe: si falta algún atab no rompe el resto
+  ['pymes','bracket','jurados','control'].forEach(t=>{
+    const el=document.getElementById('atab-'+t);
+    if(el) el.style.display=t===name?'':'none';
+    const btn=document.querySelector('[data-atab="'+t+'"]');
+    if(btn) btn.classList.toggle('on',t===name);
+  });
+  // Pequeño timeout para asegurar que el DOM esté visible antes de renderizar
+  setTimeout(()=>{
+    if(name==='pymes')   renderPymes();
+    if(name==='bracket') renderBracketBuilder();
+    if(name==='jurados') renderJurors();
+    if(name==='control') renderControl();
+  },50);
+}
+
+/* PyMEs */
+function renderPymes(){
+  const el=document.getElementById('atab-pymes');if(!el)return;
+  if(!ADMIN_TEAMS.length){
+    el.innerHTML='<div class="nostyle">No hay PyMEs registradas aún.</div>';return;
+  }
+  el.innerHTML=`
+    <div class="sel-bar">
+      <div><div class="sel-count" id="sel-count">0/8</div>
+      <div style="font-family:var(--fl);font-size:11px;color:var(--steel);letter-spacing:.08em;text-transform:uppercase">PyMEs seleccionadas</div></div>
+      <button class="btn bp" id="assign-sel-btn" onclick="assignSelected()" disabled>Asignar al bracket →</button>
+    </div>
+    <div class="team-list" id="pymes-list">
+      ${ADMIN_TEAMS.map((t,i)=>`
+        <div class="team-item" id="ti-${i}" onclick="toggleTeam(${i})">
+          <input type="checkbox" id="chk-${i}" class="team-chk" onclick="event.stopPropagation();toggleTeam(${i})"/>
+          <div style="flex:1">
+            <div style="font-family:var(--fl);font-size:13px;font-weight:700;color:var(--wh)">${esc(t.name)}</div>
+            <div style="font-family:var(--fl);font-size:11px;color:var(--steel);margin-top:2px">${esc(t.teamId)} · ${esc(t.category||'')} · ${esc(t.pais||'')} ${esc(t.ciudad||'')}</div>
+          </div>
+        </div>`).join('')}
+    </div>`;
+}
+function toggleTeam(i){
+  const chk=document.getElementById('chk-'+i),item=document.getElementById('ti-'+i);
+  chk.checked=!chk.checked;item.classList.toggle('selected',chk.checked);updateSelCount();
+}
+function updateSelCount(){
+  const chks=[...document.querySelectorAll('.team-chk')];
+  const sel=chks.filter(c=>c.checked).length;
+  const ct=document.getElementById('sel-count');if(ct)ct.textContent=sel+'/8';
+  const btn=document.getElementById('assign-sel-btn');if(btn)btn.disabled=sel!==8;
+}
+function assignSelected(){
+  const chks=[...document.querySelectorAll('.team-chk')];
+  const sel=chks.map((c,i)=>c.checked?ADMIN_TEAMS[i]:null).filter(Boolean);
+  if(sel.length!==8){showMsg('amsg','Selecciona exactamente 8 PyMEs.','me');return;}
+  showAdminTab('bracket');
+  setTimeout(()=>['QF1','QF2','QF3','QF4'].forEach((qf,qi)=>{
+    const sA=document.getElementById('bsel-'+qf+'-A'),sB=document.getElementById('bsel-'+qf+'-B');
+    if(sA)sA.value=sel[qi*2]?sel[qi*2].teamId:'';
+    if(sB)sB.value=sel[qi*2+1]?sel[qi*2+1].teamId:'';
+  }),80);
+}
+
+/* Bracket Builder */
+function renderBracketBuilder(){
+  const el=document.getElementById('atab-bracket');if(!el)return;
+  const opts=ADMIN_TEAMS.map(t=>`<option value="${esc(t.teamId)}">${esc(t.name)}</option>`).join('');
+  const empty='<option value="">— Seleccionar PyME —</option>';
+  el.innerHTML=`
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px">
+      <div style="font-family:var(--fl);font-size:13px;color:var(--steel)">Asigna una PyME a cada slot o usa asignación aleatoria</div>
+      <button class="btn bw" onclick="randomizeBracket()">🎲 Aleatorio</button>
+    </div>
+    <div id="bracket-builder">
+      ${['QF1','QF2','QF3','QF4'].map(qf=>`
+        <div class="qf-row">
+          <div class="qf-label">${qf}</div>
+          <select class="fi" id="bsel-${qf}-A">${empty}${opts}</select>
+          <div class="vs-lbl">VS</div>
+          <select class="fi" id="bsel-${qf}-B">${empty}${opts}</select>
+        </div>`).join('')}
+    </div>
+    <div class="divider"></div>
+    <button class="btn bp blg" style="width:100%;justify-content:center" onclick="saveBracket()">✦ Crear / Actualizar Bracket</button>`;
+  if(STATE&&STATE.matches){
+    ['QF1','QF2','QF3','QF4'].forEach(qf=>{
+      const m=STATE.matches.find(x=>x.matchId===qf);if(!m)return;
+      const sA=document.getElementById('bsel-'+qf+'-A');
+      const sB=document.getElementById('bsel-'+qf+'-B');
+      if(sA&&m.teamA)sA.value=m.teamA.teamId;
+      if(sB&&m.teamB)sB.value=m.teamB.teamId;
+    });
+  }
+}
+function randomizeBracket(){
+  const shuffled=[...ADMIN_TEAMS].sort(()=>Math.random()-.5).slice(0,8);
+  ['QF1','QF2','QF3','QF4'].forEach((qf,qi)=>{
+    const sA=document.getElementById('bsel-'+qf+'-A'),sB=document.getElementById('bsel-'+qf+'-B');
+    if(sA)sA.value=shuffled[qi*2]?shuffled[qi*2].teamId:'';
+    if(sB)sB.value=shuffled[qi*2+1]?shuffled[qi*2+1].teamId:'';
+  });
+  showMsg('amsg','🎲 Asignación aleatoria lista. Revisa y guarda.','ms');
+}
+async function saveBracket(){
+  const slots=[];
+  for(const qf of ['QF1','QF2','QF3','QF4']){
+    const sA=document.getElementById('bsel-'+qf+'-A'),sB=document.getElementById('bsel-'+qf+'-B');
+    const tA=ADMIN_TEAMS.find(t=>t.teamId===sA?.value),tB=ADMIN_TEAMS.find(t=>t.teamId===sB?.value);
+    if(!tA||!tB){showMsg('amsg','⚠️ Completa todos los slots antes de guardar.','me');return;}
+    slots.push({teamId:tA.teamId,name:tA.name},{teamId:tB.teamId,name:tB.name});
+  }
+  if(new Set(slots.map(t=>t.teamId)).size!==8){showMsg('amsg','⚠️ Hay PyMEs repetidas.','me');return;}
+  showMsg('amsg','<span class="spin"></span> Guardando bracket...','mi');
+  try{
+    const r=await apiCall({action:'adminSetBracket',token:ADMIN_TOKEN_VAL,slots:JSON.stringify(slots)});
+    showMsg('amsg',r.message||(r.ok?'✓ Bracket creado.':'✗ Error.'),r.ok?'ms':'me');
+    if(r.ok){load();setTimeout(()=>showAdminTab('control'),800);}
+  }catch(e){showMsg('amsg','Error: '+e.message,'me');}
+}
+
+async function renderJurors(){
+  const el=document.getElementById('atab-jurados');if(!el)return;
+  el.innerHTML=`
+    <div style="background:var(--panel);border:1px solid var(--cbr);border-radius:14px;padding:20px;margin-bottom:16px">
+      <div style="font-family:var(--fd);font-size:20px;color:var(--wh);margin-bottom:16px">AGREGAR JURADO</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+        <div class="field" style="margin:0">
+          <label>Nombre completo <span style="color:var(--g)">*</span></label>
+          <input class="fi" type="text" id="new-juror-name" placeholder="Ej. Juan Pérez"/>
+        </div>
+        <div class="field" style="margin:0">
+          <label>Token personalizado <span style="color:var(--steel)">(opcional)</span></label>
+          <input class="fi" type="text" id="new-juror-token" placeholder="Se genera automático"/>
+        </div>
+      </div>
+      <button class="btn bp" onclick="addJuror()" style="width:100%;justify-content:center">✦ Agregar jurado</button>
+    </div>
+    <div style="font-family:var(--fl);font-size:11px;color:var(--steel);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px">Jurados registrados</div>
+    <div id="jurors-list"><div class="nostyle"><span class="spin"></span> Cargando...</div></div>`;
+  try{
+    const r=await apiCall({action:'adminGetJurors',token:ADMIN_TOKEN_VAL});
+    const jlist=document.getElementById('jurors-list');if(!jlist)return;
+    if(!r.ok){jlist.innerHTML='<div class="nostyle">Error al cargar jurados.</div>';return;}
+    const jurors=r.jurors||[];
+    if(!jurors.length){jlist.innerHTML='<div class="nostyle">No hay jurados.</div>';return;}
+    jlist.innerHTML=jurors.map(j=>`
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;
+        background:var(--panel);border:1px solid ${j.base?'rgba(135,145,154,.15)':'var(--cbr)'};
+        border-radius:12px;margin-bottom:8px;gap:10px;flex-wrap:wrap">
+        <div style="flex:1">
+          <div style="font-family:var(--fl);font-size:13px;font-weight:700;color:var(--wh)">${esc(j.name)}</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:4px">
+            <code style="font-family:monospace;font-size:12px;color:var(--g);background:rgba(66,247,152,.1);padding:2px 8px;border-radius:6px">${esc(j.token)}</code>
+            ${j.base?'<span style="font-family:var(--fl);font-size:10px;color:var(--steel);letter-spacing:.06em">BASE</span>':''}
+          </div>
+        </div>
+        ${!j.base?`<button class="btn bd bsm" data-tok="${esc(j.token)}" onclick="deleteJurorBtn(this)">✕ Eliminar</button>`:''}
+      </div>`).join('');
+  }catch(e){
+    const jlist=document.getElementById('jurors-list');
+    if(jlist)jlist.innerHTML='<div class="nostyle">Error: '+e.message+'</div>';
+  }
+}
+
+async function addJuror(){
+  const name=document.getElementById('new-juror-name').value.trim();
+  const tok =document.getElementById('new-juror-token').value.trim();
+  if(!name){showMsg('amsg','Ingresa el nombre del jurado.','me');return;}
+  showMsg('amsg','<span class="spin"></span> Agregando jurado...','mi');
+  try{
+    const r=await apiCall({action:'adminAddJuror',token:ADMIN_TOKEN_VAL,jurorName:name,jurorToken:tok});
+    if(r.ok){
+      showMsg('amsg','✓ '+r.jurorName+' agregado. Token: <strong style="color:var(--g)">'+r.token+'</strong>','ms');
+      document.getElementById('new-juror-name').value='';
+      document.getElementById('new-juror-token').value='';
+      renderJurors();
+    }else showMsg('amsg',r.message||'Error al agregar.','me');
+  }catch(e){showMsg('amsg','Error: '+e.message,'me');}
+}
+
+function deleteJurorBtn(btn){
+  const tok=btn.dataset.tok;
+  deleteJuror(tok);
+}
+async function deleteJuror(tok){
+  showMsg('amsg','<span class="spin"></span> Eliminando jurado...','mi');
+  try{
+    const r=await apiCall({action:'adminDeleteJuror',token:ADMIN_TOKEN_VAL,jurorToken:tok});
+    showMsg('amsg',r.message||(r.ok?'✓ Eliminado.':'✗ Error.'),r.ok?'ms':'me');
+    if(r.ok)renderJurors();
+  }catch(e){showMsg('amsg','Error: '+e.message,'me');}
+}
+function renderControl(){
+  const el=document.getElementById('control-bracket');if(!el)return;
+  if(!STATE||!STATE.matches){el.innerHTML='<div class="nostyle">No hay bracket activo.</div>';return;}
+  const ids=['QF1','QF2','QF3','QF4','SF1','SF2','FIN'];
+  const ms=STATE.matches.filter(m=>ids.includes(m.matchId));
+  el.innerHTML=ms.map(m=>{
+    const closed=m.status==='CLOSED';
+    const hasBoth=m.teamA&&m.teamB;
+    const wName=m.winner?(m.teamA&&m.teamA.teamId===m.winner?m.teamA.name:m.teamB?m.teamB.name:''):'';
+    return`<div class="ctrl-match">
+      <div class="ctrl-head">
+        <div>
+          <span class="ctrl-badge">${m.matchId}</span>
+          <span class="badge b${m.status.toLowerCase()}">${m.status}</span>
+          <span style="font-family:var(--fl);font-size:11px;color:var(--steel);margin-left:8px">Votos: ${m.scoreA||0} - ${m.scoreB||0}</span>
+        </div>
+        ${closed?`<span class="ctrl-winner">✓ ${esc(wName)}</span>`:''}
+      </div>
+      ${hasBoth?`
+        <div class="ctrl-names">
+          <input class="fi" id="en-${m.matchId}-A" value="${esc(m.teamA.name)}" ${closed?'disabled':''}/>
+          <div class="ctrl-vs">VS</div>
+          <input class="fi" id="en-${m.matchId}-B" value="${esc(m.teamB.name)}" ${closed?'disabled':''}/>
+          ${!closed?`<button class="btn bo bsm" data-mid="${m.matchId}" onclick="saveNamesBtn(this)">💾 Guardar</button>`:''}
+        </div>
+        ${!closed?`
+        <div>
+          <div class="adv-lbl">⚡ Avanzar manualmente</div>
+          <div class="adv-btns">
+            <button class="btn bp bsm" style="justify-content:center"
+              data-mid="${m.matchId}"
+              data-wid="${esc(m.teamA.teamId)}"
+              data-wname="${esc(m.teamA.name)}"
+              onclick="advanceBtn(this)">✦ ${esc(m.teamA.name)}</button>
+            <button class="btn bp bsm" style="justify-content:center"
+              data-mid="${m.matchId}"
+              data-wid="${esc(m.teamB.teamId)}"
+              data-wname="${esc(m.teamB.name)}"
+              onclick="advanceBtn(this)">✦ ${esc(m.teamB.name)}</button>
+          </div>
+        </div>`:''}
+      `:`<div class="nostyle" style="padding:4px 0">Esperando equipos...</div>`}
+    </div>`;
+  }).join('');
+}
+
+/* advanceBtn — lee los datos del data attribute, sin problemas de caracteres especiales */
+function advanceBtn(btn){
+  const matchId=btn.dataset.mid;
+  const winnerId=btn.dataset.wid;
+  const winnerName=btn.dataset.wname;
+  if(!matchId||!winnerId){showMsg('amsg','Error: datos incompletos en el botón.','me');return;}
+  doAdvance(matchId,winnerId,winnerName);
+}
+
+async function doAdvance(matchId,winnerId,winnerName){
+  if(!ADMIN_TOKEN_VAL){showMsg('amsg','Sesión expirada. Vuelve a entrar con tu token.','me');return;}
+  showMsg('amsg','<span class="spin"></span> Avanzando a '+winnerName+'...','mi');
+  const msgEl=document.getElementById('amsg');
+  if(msgEl)msgEl.scrollIntoView({behavior:'smooth',block:'center'});
+  try{
+    const r=await apiCall({action:'adminAdvanceMatch',token:ADMIN_TOKEN_VAL,matchId:matchId,winnerId:winnerId});
+    showMsg('amsg',r.message||(r.ok?'✓ '+winnerName+' avanza desde '+matchId+'.':'✗ Error.'),r.ok?'ms':'me');
+    if(r.ok)setTimeout(()=>{load();},600);
+  }catch(e){showMsg('amsg','Error de conexión: '+e.message,'me');}
+}
+
+function saveNamesBtn(btn){
+  const matchId=btn.dataset.mid;saveNames(matchId);
+}
+async function saveNames(matchId){
+  const m=STATE&&STATE.matches?STATE.matches.find(x=>x.matchId===matchId):null;
+  const nameA=document.getElementById('en-'+matchId+'-A')?.value.trim();
+  const nameB=document.getElementById('en-'+matchId+'-B')?.value.trim();
+  showMsg('amsg','<span class="spin"></span> Guardando nombres...','mi');
+  try{
+    const calls=[];
+    if(nameA&&m&&m.teamA)calls.push(apiCall({action:'adminEditName',token:ADMIN_TOKEN_VAL,matchId,slot:'A',newName:nameA}));
+    if(nameB&&m&&m.teamB)calls.push(apiCall({action:'adminEditName',token:ADMIN_TOKEN_VAL,matchId,slot:'B',newName:nameB}));
+    await Promise.all(calls);
+    showMsg('amsg','✓ Nombres de '+matchId+' actualizados.','ms');load();
+  }catch(e){showMsg('amsg','Error: '+e.message,'me');}
+}
+
+function handleReset(){
+  showMsg('amsg','⚠️ <strong style="color:#ff5555">IRREVERSIBLE</strong> — Elimina todos los votos y el bracket.<br><div style="display:flex;gap:8px;margin-top:12px"><button class="btn bd bsm" onclick="confirmReset()">🗑 Sí, reiniciar</button><button class="btn bg bsm" onclick="showMsg(\'amsg\',\'\',\'\')">Cancelar</button></div>','mi');
+  const el=document.getElementById('amsg');if(el)el.scrollIntoView({behavior:'smooth',block:'center'});
+}
+async function confirmReset(){
+  showMsg('amsg','<span class="spin"></span> Reiniciando...','mi');
+  try{
+    const r=await apiCall({action:'adminResetAll',token:ADMIN_TOKEN_VAL});
+    showMsg('amsg',r.message||(r.ok?'✓ Reiniciado.':'✗ Error.'),r.ok?'ms':'me');
+    if(r.ok){STATE=null;load();}
+  }catch(e){showMsg('amsg','Error: '+e.message,'me');}
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  // Elementos opcionales — null check para evitar errores si no existen
+  const hd=document.getElementById('hdate');if(hd)hd.textContent=CFG.EVENT_DATE;
+  const hv=document.getElementById('hvenue');if(hv)hv.textContent=CFG.EVENT_VENUE;
+  const hd2=document.getElementById('hdate2');
+  if(hd2)hd2.textContent=CFG.EVENT_DATE+' · '+CFG.EVENT_VENUE;
+  setRole('public','','');
+  load();
+  setInterval(load,CFG.REFRESH_INTERVAL);
+  document.getElementById('gtok').addEventListener('keydown',e=>{if(e.key==='Enter')handleGlobalLogin();});
+  document.getElementById('jtok').addEventListener('keydown',e=>{if(e.key==='Enter')handleJurorVerify();});
+});
+</script>
+
+<!-- LOGIN OVERLAY -->
+<div id="login-overlay" class="overlay" onclick="if(event.target===this)hideLoginOverlay()">
+  <div class="login-modal">
+    <div class="lm-title">ACCEDER</div>
+    <div class="lm-sub">Ingresa tu token de jurado o administrador</div>
+    <div class="field"><label>Token de acceso</label>
+      <input class="fi" type="password" id="gtok" placeholder="••••••••" autocomplete="off"/>
+    </div>
+    <button class="btn bp" style="width:100%;justify-content:center;margin-bottom:10px" onclick="handleGlobalLogin()">Verificar acceso</button>
+    <button class="btn bg bsm" style="width:100%;justify-content:center" onclick="hideLoginOverlay()">Cancelar</button>
+    <div class="msg" id="lmsg"></div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="logo">ADMAIORA <em>·</em> CUP 2026</div>
+    <div class="tabs">
+      <button class="tab on" data-tab="bracket" onclick="showTab('bracket')"><span class="ldot"></span>Bracket</button>
+      <button class="tab" data-tab="register" onclick="showTab('register')">PyMEs</button>
+      <button class="tab" id="nav-jury" data-tab="jury" style="display:none" onclick="showTab('jury')">Jurado</button>
+      <button class="tab" id="nav-admin" data-tab="admin" style="display:none" onclick="showTab('admin')">Admin</button>
+    </div>
+    <div class="nav-right">
+      <span id="nav-user" class="nav-user"></span>
+      <button class="btn bg bsm" id="nav-login-btn" onclick="showLoginOverlay()">🔐 Acceder</button>
+      <button class="btn bd bsm" id="nav-logout-btn" style="display:none" onclick="logout()">Salir</button>
+    </div>
+  </div>
+</nav>
+
+<!-- BRACKET -->
+<div id="pg-bracket" class="pg on">
+  <!-- STATS BAR -->
+  <div style="background:rgba(0,0,0,.6);border-bottom:1px solid var(--cbr);padding:12px 24px">
+    <div style="max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+      <div style="display:flex;align-items:center;gap:6px">
+        <span class="ldot"></span>
+        <span style="font-family:var(--fd);font-size:18px;letter-spacing:.04em;color:var(--wh)">B2AI <em style="color:var(--g);font-style:normal">INNOVATION CUP</em> 2026</span>
+        <span style="font-family:var(--fl);font-size:11px;color:var(--steel);margin-left:8px;letter-spacing:.06em" id="hdate2"></span>
+      </div>
+      <div style="display:flex;gap:24px;flex-wrap:wrap">
+        <div style="text-align:center">
+          <div style="font-family:var(--fd);font-size:26px;color:var(--g);line-height:1" id="st-teams">—</div>
+          <div style="font-family:var(--fl);font-size:10px;color:var(--steel);letter-spacing:.1em;text-transform:uppercase">PyMEs</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-family:var(--fd);font-size:26px;color:var(--g);line-height:1" id="st-votes">—</div>
+          <div style="font-family:var(--fl);font-size:10px;color:var(--steel);letter-spacing:.1em;text-transform:uppercase">Votos</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-family:var(--fd);font-size:26px;color:var(--g);line-height:1" id="st-jurors">—</div>
+          <div style="font-family:var(--fl);font-size:10px;color:var(--steel);letter-spacing:.1em;text-transform:uppercase">Jurados</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-family:var(--fd);font-size:16px;color:var(--g);line-height:1;padding-top:4px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" id="st-champ">—</div>
+          <div style="font-family:var(--fl);font-size:10px;color:var(--steel);letter-spacing:.1em;text-transform:uppercase">Campeón</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BRACKET FULL SCREEN -->
+  <div class="bsec" id="bsec" style="flex:1;padding:32px 0 48px">
+    <div style="max-width:1400px;margin:0 auto;padding:0 24px">
+      <div class="shdr" style="margin-bottom:28px">
+        <div class="skick">Torneo de eliminación directa</div>
+        <h2 class="stit">BRACKET 2026</h2>
+      </div>
+      <div class="bwrap">
+        <div class="bload" id="bload"><span class="spin"></span> Cargando bracket...</div>
+        <div id="binn" style="display:none"></div>
+      </div>
+      <div id="tpwrap" style="display:none" class="tpwrap">
+        <div class="tplab">🥉 Tercer lugar</div>
+        <div id="tpcard" class="tpcard"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PYMES -->
+<div id="pg-register" class="pg">
+  <div class="fsec">
+    <div class="cont">
+      <div class="shdr"><div class="skick">Participa en el torneo</div><h2 class="stit">REGISTRA TU PYME</h2></div>
+      <div class="fbox" style="text-align:center;padding:48px 36px">
+        <div style="font-size:48px;margin-bottom:20px">🚀</div>
+        <div style="font-family:var(--fd);font-size:32px;color:var(--wh);margin-bottom:12px">¿LISTO PARA COMPETIR?</div>
+        <div style="font-family:var(--fl);font-size:16px;color:var(--steel);margin-bottom:32px;line-height:1.6;max-width:460px;margin-left:auto;margin-right:auto">
+          El registro oficial del B2AI Disruptive Challenge se realiza en nuestra página web. Completa tu aplicación y forma parte de la <strong style="color:var(--wh)">Innovation Cup 2026</strong>.
+        </div>
+        <a href="https://www.admaioramx.com/challenge" target="_blank" class="btn bp blg" style="justify-content:center;display:inline-flex;margin-bottom:24px">✦ Ir al registro oficial</a>
+        <div style="font-family:var(--fl);font-size:12px;color:rgba(135,145,154,.5)">admaioramx.com/challenge</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- JURADO -->
+<div id="pg-jury" class="pg">
+  <div class="jsec">
+    <div class="cont">
+      <div class="shdr"><div class="skick">Solo para jurados acreditados</div><h2 class="stit">PANEL DE JURADO</h2></div>
+      <div class="jgrid">
+        <div class="pbox">
+          <div class="ptit">IDENTIFICACIÓN</div>
+          <div class="field"><label>Token de jurado</label><input class="fi" type="password" id="jtok" placeholder="••••••••" autocomplete="off"/></div>
+          <button class="btn bp" style="width:100%;justify-content:center" onclick="handleJurorVerify()">Verificar acceso</button>
+          <div class="msg" id="jmsg"></div>
+          <div class="jwel" id="jwel" style="display:none">
+            <div style="font-family:var(--fl);font-size:11px;color:var(--steel);margin-bottom:4px;letter-spacing:.08em;text-transform:uppercase">Jurado activo</div>
+            <div class="jname" id="jname"></div>
+            <div style="font-family:var(--fl);font-size:12px;color:var(--steel);margin-top:4px">Selecciona un match abierto para votar</div>
+          </div>
+        </div>
+        <div class="pbox">
+          <div class="ptit">VOTACIÓN</div>
+          <div style="font-family:var(--fl);font-size:11px;color:var(--steel);margin-bottom:10px;letter-spacing:.1em;text-transform:uppercase">Matches disponibles</div>
+          <div class="oml" id="oml"><div class="nostyle"><span class="spin"></span> Cargando...</div></div>
+          <div id="vform" style="display:none">
+            <div style="font-family:var(--fl);font-size:11px;color:var(--steel);margin-bottom:8px;letter-spacing:.1em;text-transform:uppercase">Selecciona tu voto</div>
+            <div class="tvbs" id="tvbs"></div>
+            <div class="field"><label>Confianza del voto</label>
+              <select class="fi" id="vconf">
+                <option value="Alta">Alta — Estoy convencido</option>
+                <option value="Media">Media — Ligera ventaja</option>
+                <option value="Baja">Baja — Muy parejos</option>
+              </select>
+            </div>
+            <div class="field"><label>Comentarios (opcional)</label><textarea class="fi" id="vcom" rows="3" placeholder="Justificación..."></textarea></div>
+            <button class="btn bp" style="width:100%;justify-content:center" onclick="handleVote()">✦ Emitir voto</button>
+            <div class="msg" id="vmsg"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="pg-admin" class="pg">
+  <div class="asec">
+    <div class="cont">
+      <div class="shdr"><div class="skick">Acceso restringido</div><h2 class="stit">PANEL ADMIN</h2></div>
+      <div class="abox">
+        <div id="admin-login-box">
+          <div style="font-family:var(--fl);font-size:13px;color:var(--steel);margin-bottom:18px">Usa el botón <strong style="color:var(--wh)">🔐 Acceder</strong> en la barra superior con tu token de admin.</div>
+          <button class="btn bp" style="justify-content:center;width:100%" onclick="showLoginOverlay()">🔐 Abrir login</button>
+        </div>
+        <div id="admin-panel" style="display:none">
+          <div class="awel">
+            <div><div class="awel-name" id="awel-name"></div><div class="awel-sub" id="awel-sub"></div></div>
+            <button class="btn bg bsm" onclick="logout()">Cerrar sesión</button>
+          </div>
+          <div class="atabs">
+            <button class="atab" data-atab="pymes" onclick="showAdminTab('pymes')">📋 PyMEs</button>
+            <button class="atab" data-atab="bracket" onclick="showAdminTab('bracket')">⚡ Armar bracket</button>
+            <button class="atab" data-atab="jurados" onclick="showAdminTab('jurados')">👥 Jurados</button>
+            <button class="atab" data-atab="control" onclick="showAdminTab('control')">✏️ Control del torneo</button>
+          </div>
+          <div id="atab-pymes" style="display:none">
+            <div class="sel-bar">
+              <div><div class="sel-count" id="sel-count">0/8</div><div style="font-family:var(--fl);font-size:11px;color:var(--steel);letter-spacing:.08em;text-transform:uppercase">PyMEs seleccionadas</div></div>
+              <button class="btn bp" id="assign-sel-btn" onclick="assignSelected()" disabled>Asignar al bracket →</button>
+            </div>
+            <div class="team-list" id="pymes-list"></div>
+          </div>
+          <div id="atab-bracket" style="display:none">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px">
+              <div style="font-family:var(--fl);font-size:13px;color:var(--steel)">Asigna una PyME a cada slot o usa la asignación aleatoria</div>
+              <button class="btn bw" onclick="randomizeBracket()">🎲 Aleatorio</button>
+            </div>
+            <div id="bracket-builder"></div>
+            <div class="divider"></div>
+            <button class="btn bp blg" style="width:100%;justify-content:center" onclick="saveBracket()">✦ Crear / Actualizar Bracket</button>
+          </div>
+          <div id="atab-jurados" style="display:none">
+            <!-- Agregar jurado -->
+            <div style="background:var(--panel);border:1px solid var(--cbr);border-radius:14px;padding:20px;margin-bottom:16px">
+              <div style="font-family:var(--fd);font-size:20px;color:var(--wh);margin-bottom:16px">AGREGAR JURADO</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+                <div class="field" style="margin:0">
+                  <label>Nombre completo <span style="color:var(--g)">*</span></label>
+                  <input class="fi" type="text" id="new-juror-name" placeholder="Ej. Juan Pérez"/>
+                </div>
+                <div class="field" style="margin:0">
+                  <label>Token personalizado <span style="color:var(--steel)">(opcional)</span></label>
+                  <input class="fi" type="text" id="new-juror-token" placeholder="Se genera automático"/>
+                </div>
+              </div>
+              <button class="btn bp" onclick="addJuror()" style="width:100%;justify-content:center">✦ Agregar jurado</button>
+            </div>
+            <!-- Lista de jurados -->
+            <div style="font-family:var(--fl);font-size:11px;color:var(--steel);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px">Jurados registrados</div>
+            <div id="jurors-list"><div class="nostyle"><span class="spin"></span> Cargando...</div></div>
+          </div>
+            <div style="font-family:var(--fl);font-size:12px;color:var(--steel);margin-bottom:16px">Edita nombres o avanza equipos manualmente.</div>
+            <div id="control-bracket"></div>
+            <div class="divider"></div>
+            <button class="btn bd blg" style="justify-content:center;width:100%" onclick="handleReset()">🗑 Reiniciar bracket y votos</button>
+          </div>
+          <div class="msg" id="amsg" style="margin-top:16px"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="foot">
+  <div class="fbr">ADMAIORA <em>MÉXICO</em></div>
+  <div class="fmeta">Innovation Cup 2026 · B2AI Disruptive Challenge · 27 Mayo 2026 · Cámara de Diputados CDMX</div>
+  <div id="lupd"></div>
+</footer>
+</body>
+</html>
