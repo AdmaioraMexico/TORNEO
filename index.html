@@ -777,27 +777,44 @@ function renderPhaseAdmin(){
       </div>`:`<div class="nostyle">Aún no hay evaluaciones registradas.</div>`}
     </div>
 
+    <!-- Lanzar Fase 2 automático si hay top 4 -->
     ${top4.length>=4?`
     <div style="background:rgba(66,247,152,.06);border:1px solid var(--g20);border-radius:14px;padding:16px;margin-bottom:16px">
-      <div style="font-family:var(--fd);font-size:16px;color:var(--g);margin-bottom:10px">TOP 4 QUE AVANZARÍAN A SEMIFINALES</div>
+      <div style="font-family:var(--fd);font-size:16px;color:var(--g);margin-bottom:10px">TOP 4 AUTOMÁTICO</div>
       ${top4.map((t,i)=>`
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
           <span style="font-family:var(--fd);font-size:20px;color:var(--g);min-width:28px">#${i+1}</span>
-          <div>
-            <div style="font-family:var(--fl);font-size:14px;font-weight:700">${esc(t.name)}</div>
-            <div style="font-family:var(--fl);font-size:11px;color:var(--steel)">Puntaje: ${t.avgTotal}/5</div>
-          </div>
+          <div><div style="font-family:var(--fl);font-size:14px;font-weight:700">${esc(t.name)}</div>
+          <div style="font-family:var(--fl);font-size:11px;color:var(--steel)">${t.avgTotal}/5</div></div>
         </div>`).join('')}
-      <div style="font-family:var(--fl);font-size:11px;color:var(--steel);margin-top:10px">
+      <div style="font-family:var(--fl);font-size:11px;color:var(--steel);margin-top:8px">
         SF1: #1 ${esc(top4[0].name)} vs #4 ${esc(top4[3].name)} · SF2: #2 ${esc(top4[1].name)} vs #3 ${esc(top4[2].name)}
       </div>
     </div>
-    <button class="btn bp blg" style="width:100%;justify-content:center" onclick="launchPhase2()">
-      🚀 Lanzar Fase 2 — Semifinales con TOP 4
-    </button>`:`
-    <div style="font-family:var(--fl);font-size:13px;color:var(--steel);padding:12px;text-align:center">
-      Se necesitan al menos 4 empresas evaluadas para lanzar la Fase 2 (hay ${rankings.length}).
-    </div>`}
+    <button class="btn bp blg" style="width:100%;justify-content:center;margin-bottom:12px" onclick="launchPhase2Auto()">
+      🚀 Lanzar Fase 2 con TOP 4 automático
+    </button>`:''}
+
+    <!-- Selección manual SIEMPRE disponible -->
+    <div style="background:var(--panel);border:1px solid var(--cbr);border-radius:14px;padding:16px;margin-bottom:4px">
+      <div style="font-family:var(--fd);font-size:16px;color:var(--wh);margin-bottom:4px">SELECCIÓN MANUAL</div>
+      <div style="font-family:var(--fl);font-size:12px;color:var(--steel);margin-bottom:14px">
+        Elige exactamente 4 empresas para las semifinales (independientemente de los puntajes).
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+        ${['SF1-A (#1 Seed)','SF1-B (#4 Seed)','SF2-A (#2 Seed)','SF2-B (#3 Seed)'].map((label,i)=>`
+          <div>
+            <div style="font-family:var(--fl);font-size:10px;color:var(--steel);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">${label}</div>
+            <select class="fi" id="manual-slot-${i}">
+              <option value="">— Seleccionar empresa —</option>
+              ${(STATE.teams||[]).map(t=>`<option value="${esc(t.teamId)}" data-name="${esc(t.name)}">${esc(t.name)}</option>`).join('')}
+            </select>
+          </div>`).join('')}
+      </div>
+      <button class="btn bw blg" style="width:100%;justify-content:center" onclick="launchPhase2Manual()">
+        ⚡ Lanzar Fase 2 con selección manual
+      </button>
+    </div>
     `:''}
 
     ${ph==='2'?`
@@ -819,10 +836,31 @@ function renderPhaseAdmin(){
     `;
 }
 
-async function launchPhase2(){
-  showMsg('amsg','<span class="spin"></span> Lanzando Fase 2...','mi');
+// Fase 2 automático (top 4 por puntaje)
+async function launchPhase2Auto(){
+  showMsg('amsg','<span class="spin"></span> Lanzando Fase 2 automática...','mi');
   try{
     const r=await apiCall({action:'adminLaunchPhase2',token:ADMIN_TOKEN_VAL});
+    showMsg('amsg',r.message||(r.ok?'✓ Fase 2 iniciada.':'✗ Error.'),r.ok?'ms':'me');
+    if(r.ok){load();setTimeout(()=>showAdminTab('control'),1000);}
+  }catch(e){showMsg('amsg','Error: '+e.message,'me');}
+}
+
+// Fase 2 manual — admin elige los 4 equipos
+async function launchPhase2Manual(){
+  const slots=[];
+  for(let i=0;i<4;i++){
+    const sel=document.getElementById('manual-slot-'+i);
+    if(!sel||!sel.value){showMsg('amsg','⚠️ Selecciona las 4 empresas para las semifinales.','me');return;}
+    const name=sel.options[sel.selectedIndex]?.dataset?.name||sel.options[sel.selectedIndex]?.text||sel.value;
+    slots.push({teamId:sel.value,name:name});
+  }
+  // Verificar que no haya repetidos
+  const ids=new Set(slots.map(s=>s.teamId));
+  if(ids.size!==4){showMsg('amsg','⚠️ Hay empresas repetidas. Cada empresa debe aparecer solo una vez.','me');return;}
+  showMsg('amsg','<span class="spin"></span> Lanzando Fase 2 con selección manual...','mi');
+  try{
+    const r=await apiCall({action:'adminLaunchPhase2',token:ADMIN_TOKEN_VAL,slots:JSON.stringify(slots)});
     showMsg('amsg',r.message||(r.ok?'✓ Fase 2 iniciada.':'✗ Error.'),r.ok?'ms':'me');
     if(r.ok){load();setTimeout(()=>showAdminTab('control'),1000);}
   }catch(e){showMsg('amsg','Error: '+e.message,'me');}
@@ -875,15 +913,12 @@ async function renderJurors(){
     const jl=document.getElementById('jurors-list');if(!jl)return;
     const jurors=r.jurors||[];
     jl.innerHTML=jurors.map(j=>`
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--panel);border:1px solid ${j.base?'rgba(135,145,154,.15)':'var(--cbr)'};border-radius:12px;margin-bottom:8px;gap:10px;flex-wrap:wrap">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--panel);border:1px solid var(--cbr);border-radius:12px;margin-bottom:8px;gap:10px;flex-wrap:wrap">
         <div style="flex:1">
           <div style="font-family:var(--fl);font-size:13px;font-weight:700;color:var(--wh)">${esc(j.name)}</div>
-          <div style="display:flex;align-items:center;gap:8px;margin-top:4px">
-            <code style="font-family:monospace;font-size:12px;color:var(--g);background:rgba(66,247,152,.1);padding:2px 8px;border-radius:6px">${esc(j.token)}</code>
-            ${j.base?'<span style="font-family:var(--fl);font-size:10px;color:var(--steel)">BASE</span>':''}
-          </div>
+          <code style="font-family:monospace;font-size:12px;color:var(--g);background:rgba(66,247,152,.1);padding:2px 8px;border-radius:6px;display:inline-block;margin-top:4px">${esc(j.token)}</code>
         </div>
-        ${!j.base?`<button class="btn bd bsm" data-tok="${esc(j.token)}" onclick="deleteJurorBtn(this)">✕ Eliminar</button>`:''}
+        <button class="btn bd bsm" data-tok="${esc(j.token)}" onclick="deleteJurorBtn(this)">✕ Eliminar</button>
       </div>`).join('');
   }catch(e){const jl=document.getElementById('jurors-list');if(jl)jl.innerHTML='<div class="nostyle">Error: '+e.message+'</div>';}
 }
