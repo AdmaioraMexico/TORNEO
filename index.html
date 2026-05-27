@@ -677,6 +677,15 @@ const CFG = {
     { teamId: '5', empresa: 'Ilumetria',           founder: '' },
     { teamId: '6', empresa: 'Bachi pan de elote',  founder: '' },
   ],
+  // Jurados hardcodeados — verificación local, sin depender del backend
+  JURORS: [
+    { jurorId: 'j01', name: 'Jurado 1' },
+    { jurorId: 'j02', name: 'Jurado 2' },
+    { jurorId: 'j03', name: 'Jurado 3' },
+    { jurorId: 'j04', name: 'Jurado 4' },
+    { jurorId: 'j05', name: 'Jurado 5' },
+  ],
+  ADMIN_TOKEN: 'sp01',
 };
 
 /* ══════════════════════════════════════════
@@ -1119,26 +1128,38 @@ async function doLogin() {
   const token = document.getElementById('loginToken').value.trim();
   const al = document.getElementById('loginAlert');
   if (!token) return; hideAlert(al);
-  try {
-    const res = await apiCall({ action:'adminGetTeams', token });
-    if (res.ok) {
-      SESSION = { token, role:'admin', name:'Admin' };
-      document.getElementById('adminNavBtn').style.display='';
-      document.getElementById('jurorNavBtn').style.display='none';
-      document.getElementById('adminWelcome').textContent='Admin';
-      toast('Bienvenido, Admin 🛡', true); showSection('admin'); return;
-    }
-  } catch(e) {}
+
+  // 1) Verificar admin localmente
+  if (token === CFG.ADMIN_TOKEN) {
+    SESSION = { token, role:'admin', name:'Admin' };
+    document.getElementById('adminNavBtn').style.display='';
+    document.getElementById('jurorNavBtn').style.display='none';
+    document.getElementById('adminWelcome').textContent='Admin';
+    toast('Bienvenido, Admin 🛡', true); showSection('admin'); return;
+  }
+
+  // 2) Verificar jurado localmente (sin backend)
+  const localJuror = CFG.JURORS.find(j => j.jurorId === token);
+  if (localJuror) {
+    SESSION = { token, role:'juror', name: localJuror.name };
+    document.getElementById('jurorNavBtn').style.display='';
+    document.getElementById('adminNavBtn').style.display='none';
+    toast('Bienvenido, ' + localJuror.name + ' ⚖️', true);
+    showSection('juror'); return;
+  }
+
+  // 3) Intentar verificación remota (fallback)
   try {
     const res = await apiCall({ action:'verifyJuror', token });
     if (res.ok) {
-      SESSION = { token, role:'juror', name:res.name };
+      SESSION = { token, role:'juror', name: res.name || token };
       document.getElementById('jurorNavBtn').style.display='';
       document.getElementById('adminNavBtn').style.display='none';
-      toast('Bienvenido, ' + res.name + ' ⚖️', true);
+      toast('Bienvenido, ' + (res.name||token) + ' ⚖️', true);
       showSection('juror'); return;
     }
   } catch(e) {}
+
   showAlert(al,'Token inválido. Verifica tu acceso.','error');
 }
 
@@ -1249,8 +1270,9 @@ async function saveGroupStage() {
 ══════════════════════════════════════════ */
 function buildQFBuilder() {
   const container = document.getElementById('qfBuilder');
+  // Usar siempre las empresas hardcodeadas (no cachedTeams que puede estar vacío)
   const opts = `<option value="">— Seleccionar empresa —</option>` +
-    cachedTeams.map(t=>`<option value="${t.teamId}">${esc(t.empresa)}</option>`).join('');
+    CFG.GROUP_COMPANIES.map(t=>`<option value="${t.teamId}">${esc(t.empresa)}</option>`).join('');
 
   const rows = ['QF1','QF2'].map((qf,i) => {
     const labels = ['1° vs 4°', '2° vs 3°'][i];
@@ -1324,21 +1346,33 @@ async function saveBracket() {
   const al=document.getElementById('bracketAlert'); hideAlert(al);
   const bracket={};
   let valid=true;
+  // Mapa teamId → nombre de empresa
+  const nameMap = {};
+  CFG.GROUP_COMPANIES.forEach(c => { nameMap[c.teamId] = c.empresa; });
+
   ['QF1','QF2'].forEach(qf=>{
     const selA=document.getElementById(`qf-${qf}-A`).value;
     const selB=document.getElementById(`qf-${qf}-B`).value;
     const manA=document.getElementById(`qf-${qf}-A-manual`).value.trim();
     const manB=document.getElementById(`qf-${qf}-B-manual`).value.trim();
-    const teamA=selA||(manA?'MANUAL:'+manA:'');
-    const teamB=selB||(manB?'MANUAL:'+manB:'');
+    const teamA=selA||(manA?manA:'');
+    const teamB=selB||(manB?manB:'');
     if (!teamA||!teamB) valid=false;
-    bracket[qf]={teamA,teamB};
+    // Incluir nombre para que el bracket lo muestre correctamente
+    bracket[qf]={
+      teamA, teamB,
+      teamAName: nameMap[teamA] || (manA||teamA),
+      teamBName: nameMap[teamB] || (manB||teamB),
+    };
   });
   if (!valid) { showAlert(al,'Completa los 2 enfrentamientos de QF.','error'); return; }
+
+  // Guardar bracket en backend Y en STATE local como respaldo
+  STATE.bracket = { ...(STATE.bracket||{}), ...bracket };
   try {
     const res=await apiCall({ action:'adminSetBracket', token:SESSION.token, bracket:JSON.stringify(bracket) });
-    if (res.ok) { toast('Bracket QF guardado ✓',true); refresh(); }
-    else showAlert(al,res.error||'Error','error');
+    if (res.ok || res._fallback) { toast('Bracket QF guardado ✓',true); refresh(); }
+    else showAlert(al,res.error||'Error al guardar','error');
   } catch(e) { showAlert(al,e.message,'error'); }
 }
 
@@ -1373,38 +1407,35 @@ async function doAdvanceMatch(matchId,winner) {
    ADMIN — JURADOS
 ══════════════════════════════════════════ */
 async function loadAdminJurados() {
-  const el=document.getElementById('adminJuradosList');
-  el.innerHTML='<div class="loading-overlay"><span class="spinner"></span></div>';
-  try {
-    const res=await apiCall({ action:'adminGetJurors', token:SESSION.token });
-    if (!res.ok) { el.innerHTML=`<div class="alert alert-error">${res.error}</div>`; return; }
-    const list=res.jurors||[];
-    if (!list.length) { el.innerHTML='<div class="alert alert-info">No hay jurados.</div>'; return; }
-    const base = window.location.href.split('?')[0];
-    el.innerHTML = list.map(j => {
+  const el = document.getElementById('adminJuradosList');
+  const base = window.location.href.split('?')[0];
+  const list = CFG.JURORS;
+
+  el.innerHTML = `
+    <div class="alert alert-info" style="margin-bottom:16px;font-size:12px">
+      ℹ️ Comparte el link directo a cada jurado. Al abrirlo entran automáticamente sin escribir nada.
+    </div>` +
+    list.map(j => {
       const link = base + '?token=' + encodeURIComponent(j.jurorId);
       return `
-      <div class="card" style="margin-bottom:12px;padding:16px">
-        <div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:10px">
+      <div style="background:var(--g10);border:1px solid var(--border2);border-radius:var(--r2);padding:14px;margin-bottom:10px">
+        <div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:10px;align-items:center">
           <div>
-            <div style="font-weight:700;font-size:14px">${esc(j.name)}</div>
-            <div style="margin-top:4px">
-              <code style="background:var(--g10);padding:2px 8px;border-radius:4px;font-size:12px;color:var(--accent)">${esc(j.jurorId)}</code>
-              <span class="tag ${j.active?'tag-green':'tag-gray'}" style="margin-left:8px">${j.active?'Activo':'Inactivo'}</span>
+            <div style="font-weight:700;font-size:14px;color:var(--txt)">${esc(j.name)}</div>
+            <div style="margin-top:5px">
+              <code style="background:#000;padding:3px 10px;border-radius:4px;font-size:13px;color:var(--accent);border:1px solid var(--border2)">${esc(j.jurorId)}</code>
             </div>
           </div>
           <div class="row" style="gap:8px">
-            <button class="btn btn-ghost btn-sm" onclick="copyText('${esc(link)}', this)">📋 Copiar link</button>
+            <button class="btn btn-primary btn-sm" onclick="copyText('${link.replace(/'/g,"\\'")}', this)">📋 Copiar link</button>
             <button class="btn btn-ghost btn-sm" onclick="copyText('${esc(j.jurorId)}', this)">Copiar token</button>
-            <button class="btn btn-danger btn-sm" onclick="deleteJuror('${j.jurorId}')">Eliminar</button>
           </div>
         </div>
-        <div style="margin-top:10px;padding:8px 10px;background:var(--g10);border-radius:6px;font-size:11px;color:var(--txt2);word-break:break-all">
-          🔗 ${esc(link)}
+        <div style="margin-top:10px;padding:7px 10px;background:#000;border-radius:5px;font-size:11px;color:var(--txt2);word-break:break-all;border:1px solid var(--border)">
+          🔗 ${link}
         </div>
       </div>`;
     }).join('');
-  } catch(e) { el.innerHTML=`<div class="alert alert-error">Error: ${e.message}</div>`; }
 }
 
 function openAddJurorModal() {
