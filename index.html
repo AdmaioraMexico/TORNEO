@@ -662,7 +662,9 @@ h3{font-family:var(--fd);font-size:15px;font-weight:700;color:var(--txt);margin-
 ══════════════════════════════════════════ */
 const CFG = {
   BACKEND_URL: 'https://script.google.com/macros/s/AKfycbwBis9IoKHduEJtvKuo1WbYp9EgqqZ2m_fI5N2OzJiS4v3ZPazzZGSPn_K5WRRXx9Iy2g/exec',
-  REFRESH_INTERVAL: 8000,
+  // Sync en tiempo real — JSONStore (sin registro, sin auth, CORS OK)
+  SYNC_KEY: 'admaiora-torneo-2026-cup-votes',
+  REFRESH_INTERVAL: 5000,
   EVENT_DATE: '27 Mayo 2026',
   EVENT_VENUE: 'Cámara de Diputados · CDMX',
   GROUP_SIZE: 7,
@@ -938,21 +940,21 @@ function renderGroupStage(bracket) {
   } else { Object.assign(matchMap, stateMatches); }
   Object.keys(bracket).forEach(k => { if (k.startsWith('GRP_') && !matchMap[k]) matchMap[k] = bracket[k]; });
 
-  // 3) Construir tabla de scores usando: LOCAL > rankings > matchMap
+  // 3) Construir tabla de scores: Firebase (multi-device) > rankings backend > matchMap
   const scored = companies.map(c => {
     let score = null;
     let voteCount = null;
 
-    // Prioridad 1: scores locales acumulados en esta sesión
-    if (LOCAL_GROUP_SCORES[c.teamId] && LOCAL_GROUP_SCORES[c.teamId].votes.length > 0) {
-      score = LOCAL_GROUP_SCORES[c.teamId].avg;
-      voteCount = LOCAL_GROUP_SCORES[c.teamId].votes.length;
+    // Prioridad 1: Firebase — sincronizado entre todos los dispositivos
+    if (FIREBASE_SCORES[c.teamId] && FIREBASE_SCORES[c.teamId].count > 0) {
+      score = FIREBASE_SCORES[c.teamId].avg;
+      voteCount = FIREBASE_SCORES[c.teamId].count;
     }
-    // Prioridad 2: rankings del backend
+    // Prioridad 2: rankings del backend GAS
     else if (rankingsMap[c.teamId] !== undefined) {
       score = rankingsMap[c.teamId];
     }
-    // Prioridad 3: matchMap
+    // Prioridad 3: matchMap legacy
     else {
       const entry = matchMap['GRP_' + c.teamId];
       if (entry && entry.scoreA !== undefined && entry.scoreA !== '') score = parseFloat(entry.scoreA);
@@ -1076,17 +1078,71 @@ async function refresh() {
 let LOCAL_BRACKET = {};
 let LOCAL_PHASE = null;
 
-// Puntajes locales acumulados: { teamId: [score1, score2, ...] }
-// Se llenan cuando cualquier jurado/votante envía un puntaje desde ESTE navegador
-// Se usan para mostrar scores en tiempo real en el bracket aunque el backend no responda
-let LOCAL_GROUP_SCORES = {};  // { teamId: { votes: [8,7,9], sum: 24, avg: 8 } }
+// ══════════════════════════════════════════
+//  SYNC EN TIEMPO REAL — JSONStore.io
+//  Sin Firebase, sin registro, sin auth
+//  CORS habilitado — funciona en browser
+// ══════════════════════════════════════════
+let FIREBASE_SCORES = {};   // { teamId: { avg, count } } — leído del store
+let FB_POLL_TIMER = null;
+const DEVICE_ID = Math.random().toString(36).slice(2, 10); // ID único por sesión/dispositivo
+const SYNC_BASE = 'https://www.jsonstore.io/' + CFG.SYNC_KEY;
 
+// Escribir voto al store compartido
+async function fbWriteScore(teamId, score) {
+  try {
+    await fetch(SYNC_BASE + '/scores/' + teamId + '/' + DEVICE_ID, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ score, ts: Date.now() })
+    });
+  } catch(e) { console.warn('Sync write:', e); }
+}
+
+// Leer todos los votos y calcular promedios
+async function fbReadScores() {
+  try {
+    const r = await fetch(SYNC_BASE + '/scores?t=' + Date.now(), { cache: 'no-store' });
+    if (!r.ok) return;
+    const data = await r.json();
+    if (!data || !data.ok || !data.result || typeof data.result !== 'object') {
+      FIREBASE_SCORES = {}; return;
+    }
+    const agg = {};
+    Object.entries(data.result).forEach(([teamId, votes]) => {
+      if (!votes || typeof votes !== 'object') return;
+      const vals = Object.values(votes)
+        .map(v => typeof v === 'object' ? (v.score ?? v) : v)
+        .filter(v => typeof v === 'number' && !isNaN(v));
+      if (!vals.length) return;
+      agg[teamId] = { avg: vals.reduce((a,b)=>a+b,0)/vals.length, count: vals.length };
+    });
+    FIREBASE_SCORES = agg;
+    // Re-renderizar bracket si está en fase grupal
+    if (document.getElementById('sec-bracket').classList.contains('active') && (LOCAL_PHASE||STATE.phase)==='1') {
+      renderGroupStage(STATE.bracket||{});
+    }
+  } catch(e) { console.warn('Sync read:', e); }
+}
+
+// Arrancar polling cada 3 segundos
+function startFirebasePoll() {
+  if (FB_POLL_TIMER) return;
+  fbReadScores();
+  FB_POLL_TIMER = setInterval(fbReadScores, 3000);
+}
+
+// Registrar voto: local inmediato + sync al store compartido
 function recordLocalScore(teamId, score) {
-  if (!LOCAL_GROUP_SCORES[teamId]) LOCAL_GROUP_SCORES[teamId] = { votes: [], sum: 0 };
-  LOCAL_GROUP_SCORES[teamId].votes.push(score);
-  LOCAL_GROUP_SCORES[teamId].sum += score;
-  LOCAL_GROUP_SCORES[teamId].avg = LOCAL_GROUP_SCORES[teamId].sum / LOCAL_GROUP_SCORES[teamId].votes.length;
-  // Forzar re-render del bracket si está visible
+  fbWriteScore(teamId, score); // multi-dispositivo
+  // Reflejo local inmediato para no esperar el poll
+  if (!FIREBASE_SCORES[teamId]) FIREBASE_SCORES[teamId] = { avg: score, count: 1 };
+  else {
+    const prev = FIREBASE_SCORES[teamId];
+    const newSum = prev.avg * prev.count + score;
+    prev.count++;
+    prev.avg = newSum / prev.count;
+  }
   if (document.getElementById('sec-bracket').classList.contains('active') && (LOCAL_PHASE||STATE.phase)==='1') {
     renderGroupStage(STATE.bracket||{});
   }
@@ -1863,6 +1919,7 @@ function jurorLink(jurorId) {
 (async()=>{
   await refresh();
   refreshTimer = setInterval(refresh, CFG.REFRESH_INTERVAL);
+  startFirebasePoll(); // sincronizar scores entre dispositivos
 
   // Auto-login si el URL tiene ?token=xxx
   const urlToken = new URLSearchParams(window.location.search).get('token');
