@@ -694,13 +694,38 @@ let cachedTeams = [];
    POST cuando: hay logoBase64, acción es
    adminSetBracket, o payload > 1500 chars
 ══════════════════════════════════════════ */
+// Acciones de escritura que van por no-cors POST (fire-and-forget)
+const WRITE_ACTIONS = new Set([
+  'submitScore','adminSetPhase','adminAddJuror','adminDeleteJuror',
+  'adminManualAddTeam','adminDeleteTeam','adminSetBracket',
+  'adminAdvanceMatch','adminLaunchPhaseQF','adminLaunchPhaseFinal','adminResetAll'
+]);
+
 async function apiCall(params) {
-  // Siempre usamos GET para evitar problemas CORS con Google Apps Script.
-  // Las redirecciones de POST a googleusercontent.com bloquean CORS desde dominios externos.
-  const p = new URLSearchParams({ ...params, _: Date.now() });
-  const r = await fetch(CFG.BACKEND_URL + '?' + p.toString(), { cache: 'no-store' });
-  if (!r.ok) throw new Error('HTTP ' + r.status);
-  return r.json();
+  const action = params.action || '';
+  // Lecturas: GET normal con CORS
+  if (!WRITE_ACTIONS.has(action)) {
+    const p = new URLSearchParams({ ...params, _: Date.now() });
+    const r = await fetch(CFG.BACKEND_URL + '?' + p.toString(), { cache: 'no-store' });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.json();
+  }
+  // Escrituras: intentar GET primero (GAS lo soporta para la mayoría)
+  // Si falla CORS, fire-and-forget con no-cors y asumir ok
+  try {
+    const p = new URLSearchParams({ ...params, _: Date.now() });
+    const r = await fetch(CFG.BACKEND_URL + '?' + p.toString(), { cache: 'no-store' });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.json();
+  } catch(e) {
+    // Fallback: no-cors POST (no podemos leer respuesta, asumimos ok)
+    fetch(CFG.BACKEND_URL, {
+      method: 'POST', mode: 'no-cors',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams(params).toString()
+    }).catch(()=>{});
+    return { ok: true, _fallback: true };
+  }
 }
 
 /* ══════════════════════════════════════════
@@ -879,25 +904,37 @@ function teamRow(tid, name, logo, winner, score) {
 ══════════════════════════════════════════ */
 function renderGroupStage(bracket) {
   const isAdmin = SESSION.role === 'admin';
-  // Usar siempre las empresas hardcodeadas en CFG
   const companies = CFG.GROUP_COMPANIES;
 
-  // Construir mapa de scores desde STATE.matches (array) o bracket (objeto legacy)
+  // 1) Intentar leer desde STATE.rankings (backend agrega todos los votos)
+  const rankingsMap = {};
+  const stateRankings = STATE.rankings || [];
+  if (Array.isArray(stateRankings)) {
+    stateRankings.forEach(r => {
+      // El backend puede usar teamId, jurorId, empresa, totalScore, avgScore, score, scoreA…
+      const tid = String(r.teamId ?? r.jurorId ?? '');
+      const sc = r.avgScore ?? r.totalScore ?? r.score ?? r.scoreA;
+      if (tid && sc !== undefined) rankingsMap[tid] = parseFloat(sc);
+    });
+  }
+
+  // 2) Fallback: STATE.matches array → matchMap
   const matchMap = {};
   const stateMatches = STATE.matches || [];
   if (Array.isArray(stateMatches)) {
     stateMatches.forEach(m => { if (m.matchId) matchMap[m.matchId] = m; });
-  } else {
-    Object.assign(matchMap, stateMatches);
-  }
-  // También intentar desde bracket (compatibilidad)
+  } else { Object.assign(matchMap, stateMatches); }
   Object.keys(bracket).forEach(k => { if (k.startsWith('GRP_') && !matchMap[k]) matchMap[k] = bracket[k]; });
 
-  // Leer score promedio desde matchMap
+  // 3) Construir tabla de scores usando rankings > matchMap
   const scored = companies.map(c => {
-    const entry = matchMap['GRP_' + c.teamId];
-    const score = (entry && entry.scoreA !== undefined && entry.scoreA !== '')
-      ? parseFloat(entry.scoreA) : null;
+    let score = null;
+    if (rankingsMap[c.teamId] !== undefined) {
+      score = rankingsMap[c.teamId];
+    } else {
+      const entry = matchMap['GRP_' + c.teamId];
+      if (entry && entry.scoreA !== undefined && entry.scoreA !== '') score = parseFloat(entry.scoreA);
+    }
     return { ...c, score };
   }).sort((a, b) => {
     if (a.score === null && b.score === null) return 0;
@@ -980,12 +1017,27 @@ async function refresh() {
     if (!data.ok) return;
     STATE = data;
     updatePhaseBadge(data.phase);
+    const p = data.phase;
+    const bracket = data.bracket || {};
+
+    // Actualizar tab de bracket si está activo
     if (document.getElementById('sec-bracket').classList.contains('active')) {
-      const p = data.phase;
-      const bracket = data.bracket || {};
       if (p === '0') renderPhase0();
       else if (p === '1') renderGroupStage(bracket);
       else renderBracket(bracket, p);
+    }
+
+    // Actualizar vista de jurado si está activa (puntajes en tiempo real)
+    if (SESSION.role === 'juror' && document.getElementById('sec-juror').classList.contains('active')) {
+      renderJurorView();
+    }
+
+    // Actualizar contadores en header si el admin está en panel
+    if (SESSION.role === 'admin') {
+      const sc = document.getElementById('scoresCountBadge');
+      const jc = document.getElementById('jurorsCountBadge');
+      if (sc) sc.textContent = (data.scoresCount || 0) + ' puntajes';
+      if (jc) jc.textContent = (data.jurorsCount || 0) + '/' + (data.totalJurors || 0) + ' jurados';
     }
   } catch(e) { console.warn('Refresh error:', e); }
 }
@@ -1328,13 +1380,30 @@ async function loadAdminJurados() {
     if (!res.ok) { el.innerHTML=`<div class="alert alert-error">${res.error}</div>`; return; }
     const list=res.jurors||[];
     if (!list.length) { el.innerHTML='<div class="alert alert-info">No hay jurados.</div>'; return; }
-    el.innerHTML=`<table class="info-table"><thead><tr><th>Token</th><th>Nombre</th><th>Estado</th><th></th></tr></thead><tbody>`+
-      list.map(j=>`<tr>
-        <td><code style="background:var(--g10);padding:2px 7px;border-radius:4px;font-size:11px">${esc(j.jurorId)}</code></td>
-        <td>${esc(j.name)}</td>
-        <td><span class="tag ${j.active?'tag-green':'tag-gray'}">${j.active?'Activo':'Inactivo'}</span></td>
-        <td><button class="btn btn-danger btn-sm" onclick="deleteJuror('${j.jurorId}')">Eliminar</button></td>
-      </tr>`).join('')+`</tbody></table>`;
+    const base = window.location.href.split('?')[0];
+    el.innerHTML = list.map(j => {
+      const link = base + '?token=' + encodeURIComponent(j.jurorId);
+      return `
+      <div class="card" style="margin-bottom:12px;padding:16px">
+        <div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:10px">
+          <div>
+            <div style="font-weight:700;font-size:14px">${esc(j.name)}</div>
+            <div style="margin-top:4px">
+              <code style="background:var(--g10);padding:2px 8px;border-radius:4px;font-size:12px;color:var(--accent)">${esc(j.jurorId)}</code>
+              <span class="tag ${j.active?'tag-green':'tag-gray'}" style="margin-left:8px">${j.active?'Activo':'Inactivo'}</span>
+            </div>
+          </div>
+          <div class="row" style="gap:8px">
+            <button class="btn btn-ghost btn-sm" onclick="copyText('${esc(link)}', this)">📋 Copiar link</button>
+            <button class="btn btn-ghost btn-sm" onclick="copyText('${esc(j.jurorId)}', this)">Copiar token</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteJuror('${j.jurorId}')">Eliminar</button>
+          </div>
+        </div>
+        <div style="margin-top:10px;padding:8px 10px;background:var(--g10);border-radius:6px;font-size:11px;color:var(--txt2);word-break:break-all">
+          🔗 ${esc(link)}
+        </div>
+      </div>`;
+    }).join('');
   } catch(e) { el.innerHTML=`<div class="alert alert-error">Error: ${e.message}</div>`; }
 }
 
@@ -1565,11 +1634,34 @@ function hideAlert(el){ if(el) el.style.display='none'; }
 function esc(s){ if(!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 /* ══════════════════════════════════════════
-   INIT
+   COPY HELPERS
+══════════════════════════════════════════ */
+function copyText(txt, btn) {
+  navigator.clipboard.writeText(txt).then(()=>{
+    const orig = btn.textContent;
+    btn.textContent = '✓ Copiado';
+    setTimeout(()=>{ btn.textContent = orig; }, 1500);
+  }).catch(()=>{ toast('No se pudo copiar', false); });
+}
+
+function jurorLink(jurorId) {
+  const base = window.location.href.split('?')[0];
+  return base + '?token=' + encodeURIComponent(jurorId);
+}
+
+/* ══════════════════════════════════════════
+   INIT — con auto-login por URL (?token=xxx)
 ══════════════════════════════════════════ */
 (async()=>{
   await refresh();
-  refreshTimer=setInterval(refresh, CFG.REFRESH_INTERVAL);
+  refreshTimer = setInterval(refresh, CFG.REFRESH_INTERVAL);
+
+  // Auto-login si el URL tiene ?token=xxx
+  const urlToken = new URLSearchParams(window.location.search).get('token');
+  if (urlToken && !SESSION.token) {
+    document.getElementById('loginToken').value = urlToken;
+    await doLogin();
+  }
 })();
 </script>
 </body>
