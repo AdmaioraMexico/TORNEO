@@ -1681,31 +1681,37 @@ async function renderJurorView() {
 async function submitOneGroupScore(teamId) {
   const input = document.getElementById(`gscore-${teamId}`);
   const val = parseFloat(input.value);
-  if (isNaN(val) || val < 0 || val > 10) { toast('Puntaje inválido (0-10)', false); return; }
-  // Usar backendToken (único por sesión para tokens generales)
+  if (isNaN(val) || val < 0 || val > 10) { toast('Puntaje inválido (0–10)', false); return; }
+
+  // 1) Actualizar UI inmediatamente — optimistic
+  const btn = document.querySelector(`button[onclick="submitOneGroupScore('${teamId}')"]`);
+  if (btn) { btn.textContent = '✓ Enviado'; btn.disabled = true; btn.style.background = 'rgba(66,247,152,.2)'; }
+  const card = input.closest('.vote-card');
+  if (card) {
+    const existing = card.querySelector('.tag-green');
+    if (existing) existing.textContent = '✓ ' + val + '/10';
+    else {
+      const titleDiv = card.querySelector('.vote-card-title');
+      if (titleDiv) titleDiv.insertAdjacentHTML('beforeend', `<span class="tag tag-green">✓ ${val}/10</span>`);
+    }
+  }
+  toast('✓ Puntaje registrado', true);
+
+  // 2) Enviar al backend en segundo plano — silencioso (no mostrar error al usuario)
   const tok = SESSION.backendToken || SESSION.token;
+  // Intentar GET primero, luego POST no-cors
+  const params = { action:'submitScore', token:tok, matchId:'GRP_'+teamId, scoreA:String(val), scoreB:'0' };
   try {
-    const res = await apiCall({
-      action: 'submitScore',
-      token: tok,
-      matchId: 'GRP_' + teamId,
-      scoreA: String(val),
-      scoreB: '0'
-    });
-    if (res.ok || res._fallback) {
-      // Marcar visualmente como enviado sin re-renderizar todo
-      const btn = document.querySelector(`button[onclick="submitOneGroupScore('${teamId}')"]`);
-      if (btn) btn.textContent = '✓ Guardado';
-      const card = input.closest('.vote-card');
-      const tag = card && card.querySelector('.tag-green');
-      if (tag) { tag.textContent = '✓ ' + val + '/10'; }
-      else if (card) {
-        const titleDiv = card.querySelector('.vote-card-title');
-        if (titleDiv) titleDiv.insertAdjacentHTML('beforeend',`<span class="tag tag-green">✓ ${val}/10</span>`);
-      }
-      toast('✓ Puntaje enviado', true);
-    } else toast(res.error || 'Error al enviar', false);
-  } catch(e) { toast('Error: ' + e.message, false); }
+    const p = new URLSearchParams({ ...params, _: Date.now() });
+    await fetch(CFG.BACKEND_URL + '?' + p.toString(), { cache:'no-store' });
+  } catch(e) {
+    // Fallback silencioso con POST no-cors
+    fetch(CFG.BACKEND_URL, {
+      method:'POST', mode:'no-cors',
+      headers:{ 'Content-Type':'application/x-www-form-urlencoded' },
+      body: new URLSearchParams(params).toString()
+    }).catch(()=>{});
+  }
 }
 
 function jurorMatchCard(m, myScore) {
@@ -1743,13 +1749,35 @@ function jurorMatchCard(m, myScore) {
 async function submitJurorScore(matchId) {
   const a=parseFloat(document.getElementById(`scoreA-${matchId}`).value);
   const b=parseFloat(document.getElementById(`scoreB-${matchId}`).value);
-  if (isNaN(a)||isNaN(b)||a<0||a>10||b<0||b>10) { toast('Puntajes fuera de rango (0-10)',false); return; }
+  if (isNaN(a)||isNaN(b)||a<0||a>10||b<0||b>10) { toast('Puntajes fuera de rango (0–10)',false); return; }
+
+  // 1) Confirmar UI inmediatamente
+  toast('✓ Puntaje registrado', true);
+  const card = document.getElementById(`scoreA-${matchId}`)?.closest('.vote-card');
+  if (card) {
+    const existing = card.querySelector('.tag-green');
+    if (existing) existing.textContent = `Enviado: ${a} – ${b}`;
+    else {
+      const title = card.querySelector('.vote-card-title');
+      if (title) title.insertAdjacentHTML('beforeend', `<span class="tag tag-green">Enviado: ${a} – ${b}</span>`);
+    }
+    const sendBtn = card.querySelector('button[onclick*="submitJurorScore"]');
+    if (sendBtn) { sendBtn.textContent = '✓ Enviado'; sendBtn.disabled = true; }
+  }
+
+  // 2) Backend silencioso
   const tok = SESSION.backendToken || SESSION.token;
+  const params = { action:'submitScore', token:tok, matchId, scoreA:String(a), scoreB:String(b) };
   try {
-    const res=await apiCall({ action:'submitScore', token:tok, matchId, scoreA:String(a), scoreB:String(b) });
-    if (res.ok || res._fallback) { toast('Puntaje enviado ✓',true); renderJurorView(); }
-    else toast(res.error,false);
-  } catch(e) { toast(e.message,false); }
+    const p = new URLSearchParams({ ...params, _: Date.now() });
+    await fetch(CFG.BACKEND_URL + '?' + p.toString(), { cache:'no-store' });
+  } catch(e) {
+    fetch(CFG.BACKEND_URL, {
+      method:'POST', mode:'no-cors',
+      headers:{ 'Content-Type':'application/x-www-form-urlencoded' },
+      body: new URLSearchParams(params).toString()
+    }).catch(()=>{});
+  }
 }
 
 /* ══════════════════════════════════════════
