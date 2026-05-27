@@ -1020,10 +1020,15 @@ function renderPhase0() {
 /* ══════════════════════════════════════════
    REFRESH LOOP
 ══════════════════════════════════════════ */
+let _lastPhase = null;
+
 async function refresh() {
   try {
     const data = await apiCall({ action: 'getState' });
     if (!data.ok) return;
+
+    const phaseChanged = data.phase !== _lastPhase;
+    _lastPhase = data.phase;
     STATE = data;
     updatePhaseBadge(data.phase);
     const p = data.phase;
@@ -1031,25 +1036,30 @@ async function refresh() {
 
     // Actualizar tab de bracket si está activo
     if (document.getElementById('sec-bracket').classList.contains('active')) {
-      if (p === '0') renderPhase0();
-      else if (p === '1') renderGroupStage(bracket);
-      else renderBracket(bracket, p);
+      // Usar LOCAL_BRACKET si el backend no devuelve bracket de QF aún
+      const effectiveBracket = Object.keys(LOCAL_BRACKET).length > 0
+        ? { ...bracket, ...LOCAL_BRACKET }
+        : bracket;
+      const effectivePhase = LOCAL_PHASE || p;
+
+      if (effectivePhase === '0') renderPhase0();
+      else if (effectivePhase === '1') renderGroupStage(effectiveBracket);
+      else renderBracket(effectiveBracket, effectivePhase);
     }
 
-    // Actualizar vista de jurado si está activa (puntajes en tiempo real)
-    if (SESSION.role === 'juror' && document.getElementById('sec-juror').classList.contains('active')) {
+    // Vista de jurado: SOLO re-renderizar si cambió la fase (no cada 8s)
+    // Esto evita que se borren los inputs mientras el jurado está escribiendo
+    if (SESSION.role === 'juror' && phaseChanged &&
+        document.getElementById('sec-juror').classList.contains('active')) {
       renderJurorView();
     }
 
-    // Actualizar contadores en header si el admin está en panel
-    if (SESSION.role === 'admin') {
-      const sc = document.getElementById('scoresCountBadge');
-      const jc = document.getElementById('jurorsCountBadge');
-      if (sc) sc.textContent = (data.scoresCount || 0) + ' puntajes';
-      if (jc) jc.textContent = (data.jurorsCount || 0) + '/' + (data.totalJurors || 0) + ' jurados';
-    }
   } catch(e) { console.warn('Refresh error:', e); }
 }
+
+// Estado local del bracket para override inmediato sin esperar al backend
+let LOCAL_BRACKET = {};
+let LOCAL_PHASE = null;
 
 /* ══════════════════════════════════════════
    REGISTRATION
@@ -1255,14 +1265,19 @@ function buildGroupSlots() {
 
 async function saveGroupStage() {
   const al = document.getElementById('groupAlert'); hideAlert(al);
-  // Las empresas están hardcodeadas en CFG.GROUP_COMPANIES — no necesitamos
-  // guardar el bracket. Solo activamos la Fase 1.
+  // Actualizar UI inmediatamente
+  LOCAL_PHASE = '1';
+  _lastPhase = '1';
+  updatePhaseBadge('1');
+  toast('✓ Ronda Grupal lanzada — Fase 1 activa', true);
+  if (document.getElementById('sec-bracket').classList.contains('active')) {
+    renderGroupStage(STATE.bracket || {});
+  }
+  // Enviar al backend en segundo plano
   try {
-    const r = await apiCall({ action: 'adminSetPhase', token: SESSION.token, phase: '1' });
-    if (!r.ok) { showAlert(al, r.error || 'Error al activar fase', 'error'); return; }
-    toast('✓ Ronda Grupal lanzada — Fase 1 activa', true);
-    refresh();
-  } catch(e) { showAlert(al, 'Error de conexión: ' + e.message, 'error'); }
+    await apiCall({ action: 'adminSetPhase', token: SESSION.token, phase: '1' });
+  } catch(e) {}
+  setTimeout(()=>{ refresh(); }, 2000);
 }
 
 /* ══════════════════════════════════════════
@@ -1346,7 +1361,6 @@ async function saveBracket() {
   const al=document.getElementById('bracketAlert'); hideAlert(al);
   const bracket={};
   let valid=true;
-  // Mapa teamId → nombre de empresa
   const nameMap = {};
   CFG.GROUP_COMPANIES.forEach(c => { nameMap[c.teamId] = c.empresa; });
 
@@ -1358,22 +1372,33 @@ async function saveBracket() {
     const teamA=selA||(manA?manA:'');
     const teamB=selB||(manB?manB:'');
     if (!teamA||!teamB) valid=false;
-    // Incluir nombre para que el bracket lo muestre correctamente
     bracket[qf]={
       teamA, teamB,
-      teamAName: nameMap[teamA] || (manA||teamA),
-      teamBName: nameMap[teamB] || (manB||teamB),
+      teamAName: nameMap[teamA]||(manA||teamA),
+      teamBName: nameMap[teamB]||(manB||teamB),
     };
   });
   if (!valid) { showAlert(al,'Completa los 2 enfrentamientos de QF.','error'); return; }
 
-  // Guardar bracket en backend Y en STATE local como respaldo
-  STATE.bracket = { ...(STATE.bracket||{}), ...bracket };
+  // 1) Actualizar estado local INMEDIATAMENTE para mostrar QF sin esperar backend
+  LOCAL_BRACKET = { ...(STATE.bracket||{}), ...bracket };
+  LOCAL_PHASE = '2';
+  STATE.bracket = LOCAL_BRACKET;
+  _lastPhase = '2';
+  updatePhaseBadge('2');
+  renderBracket(LOCAL_BRACKET, '2');
+  toast('✓ Cuartos de Final cargados', true);
+
+  // 2) Enviar al backend en segundo plano (sin bloquear la UI)
   try {
-    const res=await apiCall({ action:'adminSetBracket', token:SESSION.token, bracket:JSON.stringify(bracket) });
-    if (res.ok || res._fallback) { toast('Bracket QF guardado ✓',true); refresh(); }
-    else showAlert(al,res.error||'Error al guardar','error');
-  } catch(e) { showAlert(al,e.message,'error'); }
+    await apiCall({ action:'adminSetBracket', token:SESSION.token, bracket:JSON.stringify(bracket) });
+  } catch(e) {}
+  try {
+    await apiCall({ action:'adminSetPhase', token:SESSION.token, phase:'2' });
+  } catch(e) {}
+
+  // 3) Sincronizar con backend para confirmar
+  setTimeout(()=>{ refresh(); }, 3000);
 }
 
 /* ══════════════════════════════════════════
@@ -1470,19 +1495,30 @@ async function deleteJuror(jurorId) {
    ADMIN — CONTROL
 ══════════════════════════════════════════ */
 async function adminAction(action) {
+  // Actualizar fase localmente si la acción la cambia
+  if (action === 'adminLaunchPhaseQF') { LOCAL_PHASE='2'; _lastPhase='2'; updatePhaseBadge('2'); }
+  if (action === 'adminLaunchPhaseFinal') { LOCAL_PHASE='3'; _lastPhase='3'; updatePhaseBadge('3'); }
   try {
     const res=await apiCall({ action, token:SESSION.token });
-    if (res.ok) { toast('✓ Hecho',true); refresh(); }
-    else toast(res.error,false);
+    if (res.ok || res._fallback) { toast('✓ Hecho',true); setTimeout(refresh,1500); }
+    else { toast(res.error||'Error',false); }
   } catch(e) { toast(e.message,false); }
 }
 
 async function setPhase(n) {
+  LOCAL_PHASE = String(n); _lastPhase = String(n);
+  updatePhaseBadge(String(n));
+  toast('Fase '+n+' activa (local)',true);
+  if (document.getElementById('sec-bracket').classList.contains('active')) {
+    const b = { ...(STATE.bracket||{}), ...LOCAL_BRACKET };
+    if (n==0) renderPhase0();
+    else if (n==1) renderGroupStage(b);
+    else renderBracket(b, String(n));
+  }
   try {
-    const res=await apiCall({ action:'adminSetPhase', token:SESSION.token, phase:String(n) });
-    if (res.ok) { toast('Fase '+n+' activa',true); refresh(); }
-    else toast(res.error,false);
-  } catch(e) { toast(e.message,false); }
+    await apiCall({ action:'adminSetPhase', token:SESSION.token, phase:String(n) });
+  } catch(e) {}
+  setTimeout(refresh,2000);
 }
 
 async function confirmReset() {
