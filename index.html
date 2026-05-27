@@ -3,1247 +3,1603 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>B2AI Disruptive Challenge — Innovation Cup 2026</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<title>Admaiora · Innovation Cup 2026</title>
 <style>
+/* ══════════════════════════════════════════════
+   TOKENS  —  Admaiora palette
+══════════════════════════════════════════════ */
 :root{
-  --g:#42F798;--g20:rgba(66,247,152,.20);--g10:rgba(66,247,152,.10);--g30:rgba(66,247,152,.30);
-  --blk:#000;--panel:#07110d;--steel:#87919a;--wh:#fff;
-  --cb:rgba(7,17,13,.92);--cbr:rgba(66,247,152,.18);--r:18px;--rl:26px;
-  --fd:'Bebas Neue',sans-serif;--fl:'Barlow Condensed',sans-serif;--fb:'Barlow',sans-serif;
+  --bg:#000000;
+  --card:#0d0d0d;
+  --border:#1a1a1a;
+  --border2:#2a2a2a;
+  --accent:#42F798;       /* cyber green */
+  --accent-dim:rgba(66,247,152,.12);
+  --accent-glow:rgba(66,247,152,.25);
+  --txt:#ffffff;
+  --txt2:#a0a0a0;
+  --g:#555;
+  --g10:#111;
+  --g20:#1a1a1a;
+  --g30:#333;
+  --win:#42F798;
+  --lose:#444;
+  --gold:#FFD700;
+  --bronze:#cd7c2f;
+  --fd:'Space Grotesk',sans-serif;
+  --fb:'Inter',sans-serif;
+  --r:10px;--r2:7px;--r3:5px;
 }
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{background:var(--blk);color:var(--wh);font-family:var(--fb);font-size:15px;min-height:100vh;overflow-x:hidden}
-::-webkit-scrollbar{width:5px;background:var(--panel)}::-webkit-scrollbar-thumb{background:var(--g20);border-radius:3px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font-family:var(--fb);min-height:100vh;overflow-x:hidden}
+button{cursor:pointer;border:none;font-family:inherit}
+input,select,textarea{font-family:inherit;color:var(--txt)}
+a{color:var(--accent);text-decoration:none}
+img{display:block}
+svg{overflow:visible}
 
-/* NAV */
-.nav{position:sticky;top:0;z-index:200;background:rgba(0,0,0,.93);backdrop-filter:blur(20px);border-bottom:1px solid var(--cbr);padding:0 16px}
-.nav-inner{max-width:1300px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:58px;gap:12px}
-.logo{font-family:var(--fd);font-size:19px;letter-spacing:.06em;color:var(--wh);white-space:nowrap;flex-shrink:0}
-.logo em{color:var(--g);font-style:normal}
-.tabs{display:flex;gap:3px;flex-wrap:wrap}
-.tab{padding:7px 16px;font-family:var(--fl);font-weight:700;font-size:12px;letter-spacing:.09em;text-transform:uppercase;background:transparent;color:var(--steel);border:1px solid transparent;border-radius:999px;cursor:pointer;transition:all .2s}
-.tab:hover{color:var(--wh)}.tab.on{color:var(--g);border-color:var(--g30);background:var(--g10)}
-.ldot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--g);margin-right:5px;animation:pdot 2s infinite;vertical-align:middle}
-.nav-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
-.nav-user{font-family:var(--fl);font-size:12px;font-weight:700;color:var(--g);letter-spacing:.06em;white-space:nowrap;display:none}
+/* ══════════════════════════════════════════════
+   HEADER
+══════════════════════════════════════════════ */
+.hdr{
+  background:#000;border-bottom:1px solid var(--border);
+  padding:0 28px;display:flex;align-items:center;gap:20px;
+  height:68px;position:sticky;top:0;z-index:100;
+}
+.hdr-logo{
+  font-family:var(--fd);font-size:20px;font-weight:700;
+  color:var(--accent);letter-spacing:-.02em;white-space:nowrap;
+}
+.hdr-logo span{color:#fff;font-weight:400}
+.hdr-sub{font-size:11px;color:var(--g);white-space:nowrap;letter-spacing:.04em;text-transform:uppercase}
+.hdr-spacer{flex:1}
+.hdr-badge{
+  padding:4px 14px;border-radius:20px;font-size:11px;font-weight:700;
+  border:1px solid var(--border2);color:var(--txt2);letter-spacing:.06em;text-transform:uppercase;
+}
+.hdr-badge.live{
+  background:rgba(66,247,152,.1);border-color:var(--accent);color:var(--accent);
+  animation:pulse 2s infinite;
+}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
 
-/* PHASE BADGE */
-.phase-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 14px;border-radius:999px;font-family:var(--fl);font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase}
-.phase-1{background:rgba(66,247,152,.1);color:var(--g);border:1px solid var(--g30)}
-.phase-2{background:rgba(255,200,0,.1);color:#ffc800;border:1px solid rgba(255,200,0,.3)}
-.phase-3{background:rgba(255,120,0,.12);color:#ff8c00;border:1px solid rgba(255,120,0,.3)}
+/* ══════════════════════════════════════════════
+   NAV
+══════════════════════════════════════════════ */
+.nav{display:flex;gap:2px;padding:14px 24px 0;border-bottom:1px solid var(--border)}
+.nav-btn{
+  padding:8px 22px;border-radius:6px 6px 0 0;
+  font-size:13px;font-weight:600;background:transparent;
+  color:var(--txt2);border:1px solid transparent;border-bottom:none;
+  transition:all .2s;letter-spacing:.01em;
+}
+.nav-btn:hover{color:var(--txt);background:var(--g10)}
+.nav-btn.active{background:var(--g10);color:var(--accent);border-color:var(--border);}
 
-/* OVERLAY */
-.overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.88);z-index:500;align-items:center;justify-content:center}
-.overlay.vis{display:flex}
-.login-modal{background:var(--cb);border:1px solid var(--cbr);border-radius:var(--rl);padding:36px;width:100%;max-width:400px;margin:20px}
-.lm-title{font-family:var(--fd);font-size:32px;color:var(--wh);letter-spacing:.04em;margin-bottom:6px}
-.lm-sub{font-family:var(--fl);font-size:13px;color:var(--steel);margin-bottom:24px}
+/* ══════════════════════════════════════════════
+   MAIN
+══════════════════════════════════════════════ */
+.main{max-width:1280px;margin:0 auto;padding:28px 24px}
+.section{display:none}
+.section.active{display:block}
 
-/* PAGES */
-.pg{display:none}.pg.on{display:block}
+/* ══════════════════════════════════════════════
+   CARDS
+══════════════════════════════════════════════ */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:24px}
+.card+.card{margin-top:16px}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.col{display:flex;flex-direction:column;gap:8px}
+h2{font-family:var(--fd);font-size:22px;font-weight:700;color:var(--txt)}
+h3{font-family:var(--fd);font-size:15px;font-weight:700;color:var(--txt);margin-bottom:12px}
+.lbl{font-size:11px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.08em}
+.tag{display:inline-block;padding:2px 9px;border-radius:4px;font-size:11px;font-weight:700;letter-spacing:.03em}
+.tag-green{background:rgba(66,247,152,.12);color:var(--accent);border:1px solid rgba(66,247,152,.3)}
+.tag-gray{background:var(--g10);color:var(--txt2);border:1px solid var(--border2)}
+.tag-gold{background:rgba(255,215,0,.1);color:var(--gold);border:1px solid rgba(255,215,0,.25)}
+.tag-red{background:rgba(239,68,68,.12);color:#f87171;border:1px solid rgba(239,68,68,.25)}
 
-/* STATS BAR */
-.stats-bar{background:rgba(0,0,0,.7);border-bottom:1px solid var(--cbr);padding:10px 20px}
-.stats-inner{max-width:1300px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
-.stats-title{font-family:var(--fd);font-size:18px;letter-spacing:.04em;color:var(--wh)}
-.stats-nums{display:flex;gap:20px;flex-wrap:wrap}
-.stat-num{text-align:center}
-.stat-n{font-family:var(--fd);font-size:24px;color:var(--g);line-height:1}
-.stat-l{font-family:var(--fl);font-size:10px;color:var(--steel);letter-spacing:.1em;text-transform:uppercase}
+/* ══════════════════════════════════════════════
+   BUTTONS
+══════════════════════════════════════════════ */
+.btn{
+  padding:10px 20px;border-radius:var(--r2);font-size:13px;font-weight:700;
+  transition:all .2s;display:inline-flex;align-items:center;gap:6px;letter-spacing:.02em;
+}
+.btn-primary{background:var(--accent);color:#000}
+.btn-primary:hover{background:#5fffa8}
+.btn-sm{padding:6px 14px;font-size:12px}
+.btn-ghost{background:transparent;color:var(--txt2);border:1px solid var(--border2)}
+.btn-ghost:hover{background:var(--g10);color:var(--txt);border-color:var(--g30)}
+.btn-danger{background:rgba(239,68,68,.1);color:#f87171;border:1px solid rgba(239,68,68,.25)}
+.btn-danger:hover{background:rgba(239,68,68,.2)}
+.btn-success{background:rgba(66,247,152,.1);color:var(--accent);border:1px solid rgba(66,247,152,.3)}
+.btn-success:hover{background:rgba(66,247,152,.2)}
+.btn:disabled{opacity:.35;cursor:not-allowed}
 
-/* SCOREBOARD Fase 1 */
-.scoreboard-wrap{max-width:1100px;margin:0 auto;padding:32px 20px}
-.sb-title{font-family:var(--fd);font-size:clamp(28px,5vw,52px);color:var(--wh);letter-spacing:.02em;margin-bottom:8px}
-.sb-sub{font-family:var(--fl);font-size:14px;color:var(--steel);margin-bottom:28px}
-.sb-table{width:100%;border-collapse:collapse}
-.sb-table th{font-family:var(--fl);font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--steel);padding:8px 12px;text-align:left;border-bottom:1px solid var(--cbr)}
-.sb-table th.right,.sb-table td.right{text-align:right}
-.sb-row{transition:background .2s}
-.sb-row td{padding:12px 12px;border-bottom:1px solid rgba(255,255,255,.05);font-family:var(--fl);font-size:13px;font-weight:600;color:var(--wh)}
-.sb-row.top4 td{background:rgba(66,247,152,.06)}
-.sb-row.top4 .sb-rank{color:var(--g);font-family:var(--fd);font-size:20px}
-.sb-rank{font-family:var(--fd);font-size:18px;color:var(--steel);min-width:36px;display:inline-block}
-.sb-score{font-family:var(--fd);font-size:22px;color:var(--g)}
-.sb-score.grey{color:var(--steel)}
-.sb-bar-wrap{width:80px;height:6px;background:rgba(255,255,255,.08);border-radius:3px;display:inline-block;vertical-align:middle}
-.sb-bar{height:6px;background:var(--g);border-radius:3px;transition:width .5s}
-.top4-label{display:inline-block;background:var(--g);color:var(--blk);font-family:var(--fl);font-size:10px;font-weight:700;letter-spacing:.08em;padding:2px 8px;border-radius:999px;margin-left:8px}
+/* ══════════════════════════════════════════════
+   FORMS
+══════════════════════════════════════════════ */
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:11px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.06em}
+.field input,.field select,.field textarea{
+  background:var(--g10);border:1px solid var(--border2);border-radius:var(--r3);
+  padding:10px 14px;font-size:14px;color:var(--txt);outline:none;
+  transition:border-color .2s;
+}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent)}
+.field textarea{resize:vertical;min-height:80px}
+.field select option{background:#111}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.form-grid{grid-template-columns:1fr}}
 
-/* BRACKET */
-.bracket-section{padding:28px 20px 48px}
-.mc{background:var(--cb);border:1px solid var(--cbr);border-radius:var(--r);overflow:hidden;transition:border-color .3s,box-shadow .3s}
-.mc.mopen{border-color:rgba(66,247,152,.65);box-shadow:0 0 16px rgba(66,247,152,.15)}
-.mc.mfin{border-radius:var(--rl);border-color:rgba(66,247,152,.35)}
-.mhdr{display:flex;align-items:center;justify-content:space-between;padding:7px 12px;background:rgba(0,0,0,.5);border-bottom:1px solid var(--cbr)}
-.mid{font-family:var(--fl);font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--steel)}
-.badge{display:inline-block;padding:2px 8px;border-radius:999px;font-family:var(--fl);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
-.bpend{background:rgba(135,145,154,.18);color:var(--steel)}
-.bopen{background:rgba(66,247,152,.14);color:var(--g);border:1px solid var(--g30)}
-.bclos{background:rgba(255,255,255,.07);color:rgba(255,255,255,.4)}
-.mteam{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;gap:8px;transition:background .2s}
-.mteam:first-child{border-bottom:1px solid rgba(255,255,255,.06)}
-.mteam.mwin{background:rgba(66,247,152,.09)}
-.mname{font-family:var(--fl);font-size:14px;font-weight:600;color:var(--wh);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
-.mname.tbd{color:var(--steel);font-weight:400;font-style:italic}
-.mscore{font-family:var(--fd);font-size:22px;color:var(--g);min-width:28px;text-align:right}
-.mscore.z{color:var(--steel)}
-.mbar{padding:5px 12px;background:rgba(66,247,152,.11);border-top:1px solid var(--g30);font-family:var(--fl);font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--g);display:none}
-.mbar.vis{display:block}
-.ticon{width:64px;height:64px;border-radius:50%;background:radial-gradient(circle,rgba(66,247,152,.22) 0%,rgba(66,247,152,.04) 70%);border:2px solid var(--g30);display:flex;align-items:center;justify-content:center;font-size:28px;animation:tpulse 3s infinite;box-shadow:0 0 24px rgba(66,247,152,.2)}
-.tlab{font-family:var(--fd);font-size:11px;letter-spacing:.22em;color:var(--g);text-align:center}
-.chname{font-family:var(--fd);font-size:18px;color:var(--g);text-align:center;letter-spacing:.05em;text-shadow:0 0 16px rgba(66,247,152,.5);max-width:240px;word-break:break-word}
-.col-lbl{font-family:var(--fl);font-size:11px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--steel);text-align:center}
-.col-lbl.gc{color:var(--g)}
+/* ══════════════════════════════════════════════
+   LOGO UPLOAD
+══════════════════════════════════════════════ */
+.logo-upload-area{
+  border:2px dashed var(--border2);border-radius:var(--r);
+  padding:24px;text-align:center;cursor:pointer;transition:all .2s;
+  position:relative;
+}
+.logo-upload-area:hover{border-color:var(--accent);background:var(--accent-dim)}
+.logo-upload-area input[type=file]{
+  position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;
+}
+.logo-preview{width:72px;height:72px;border-radius:50%;object-fit:cover;
+  border:2px solid var(--accent);margin:0 auto 8px}
+.logo-placeholder{
+  width:72px;height:72px;border-radius:50%;background:var(--g20);
+  display:flex;align-items:center;justify-content:center;
+  font-size:28px;margin:0 auto 8px;border:2px dashed var(--border2);
+}
 
-/* SCORING — Fase 1 jurado */
-.scoring-wrap{max-width:900px;margin:0 auto}
-.score-card{background:var(--cb);border:1px solid var(--cbr);border-radius:var(--r);padding:18px;margin-bottom:12px;transition:border-color .3s}
-.score-card.done{border-color:rgba(66,247,152,.5);background:rgba(66,247,152,.04)}
-.score-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px}
-.score-team-name{font-family:var(--fd);font-size:20px;color:var(--wh);letter-spacing:.04em}
-.score-team-cat{font-family:var(--fl);font-size:11px;color:var(--steel);letter-spacing:.06em}
-.score-done-badge{font-family:var(--fl);font-size:12px;font-weight:700;color:var(--g);letter-spacing:.06em}
-.criteria-row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;margin-bottom:10px}
-.crit-label{font-family:var(--fl);font-size:12px;font-weight:700;color:var(--steel);letter-spacing:.06em;text-transform:uppercase}
-.score-btns{display:flex;gap:4px}
-.sb{width:32px;height:32px;border-radius:8px;border:1px solid rgba(135,145,154,.3);background:var(--panel);color:var(--steel);font-family:var(--fd);font-size:16px;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center}
-.sb:hover{border-color:var(--g);color:var(--wh)}
-.sb.sel{background:var(--g);color:var(--blk);border-color:var(--g)}
-.score-preview{font-family:var(--fd);font-size:14px;color:var(--steel);text-align:right;margin-top:4px}
-.score-preview span{color:var(--g)}
+/* ══════════════════════════════════════════════
+   SMALL LOGOS
+══════════════════════════════════════════════ */
+.logo-sm{width:26px;height:26px;border-radius:50%;object-fit:cover;flex-shrink:0;background:var(--g20)}
+.logo-sm-init{
+  width:26px;height:26px;border-radius:50%;background:var(--g10);
+  border:1px solid var(--g30);display:flex;align-items:center;justify-content:center;
+  font-family:var(--fd);font-size:11px;color:var(--g);flex-shrink:0;font-weight:700;
+}
 
-/* JURY PANEL */
-.jsec{background:var(--blk);padding:40px 20px}
-.jgrid{display:grid;grid-template-columns:1fr 1fr;gap:26px;max-width:960px;margin:0 auto;align-items:start}
-.pbox{background:var(--cb);border:1px solid var(--cbr);border-radius:var(--rl);padding:26px}
-.ptit{font-family:var(--fd);font-size:24px;color:var(--wh);margin-bottom:18px}
-.oml{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
-.omb{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--panel);border:1px solid var(--cbr);border-radius:12px;cursor:pointer;font-family:var(--fl);font-size:12px;font-weight:700;color:var(--wh);letter-spacing:.04em;transition:all .2s}
-.omb:hover,.omb.on{border-color:var(--g);background:var(--g10);color:var(--g)}
-.omb.voted{border-color:rgba(66,247,152,.4);background:rgba(66,247,152,.05)}
-.tvbs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
-.tvb{padding:16px 10px;border-radius:14px;background:var(--panel);border:2px solid var(--cbr);cursor:pointer;text-align:center;transition:all .2s;font-family:var(--fl);font-size:13px;font-weight:700;color:var(--wh)}
-.tvb:hover,.tvb.on{border-color:var(--g);color:var(--g);background:var(--g10);box-shadow:0 0 12px rgba(66,247,152,.18)}
-.tvb .tvsub{font-size:10px;color:var(--steel);margin-bottom:4px;letter-spacing:.08em}
-.jwel{margin-top:18px;padding-top:18px;border-top:1px solid var(--cbr)}
-.jname{font-family:var(--fd);font-size:22px;color:var(--g)}
+/* ══════════════════════════════════════════════
+   ALERTS / TOAST
+══════════════════════════════════════════════ */
+.alert{padding:11px 16px;border-radius:var(--r2);font-size:13px;margin-top:12px}
+.alert-error{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);color:#fca5a5}
+.alert-success{background:rgba(66,247,152,.1);border:1px solid rgba(66,247,152,.3);color:var(--accent)}
+.alert-info{background:var(--accent-dim);border:1px solid rgba(66,247,152,.2);color:var(--accent)}
+#toast{
+  position:fixed;bottom:24px;right:24px;z-index:999;
+  padding:11px 20px;border-radius:var(--r2);font-size:13px;font-weight:600;
+  background:#111;border:1px solid var(--border2);
+  transform:translateY(80px);opacity:0;transition:all .3s;pointer-events:none;
+}
+#toast.show{transform:translateY(0);opacity:1}
+#toast.ok{border-color:var(--accent);color:var(--accent)}
+#toast.err{border-color:#f87171;color:#f87171}
 
-/* ADMIN */
-.asec{background:var(--blk);padding:40px 20px}
-.abox{max-width:900px;margin:0 auto;background:var(--cb);border:1px solid var(--cbr);border-radius:var(--rl);padding:26px}
-.atabs{display:flex;gap:6px;margin-bottom:24px;flex-wrap:wrap}
-.atab{padding:9px 20px;font-family:var(--fl);font-weight:700;font-size:12px;letter-spacing:.09em;text-transform:uppercase;background:transparent;color:var(--steel);border:1px solid rgba(135,145,154,.2);border-radius:999px;cursor:pointer;transition:all .2s}
-.atab:hover{color:var(--wh)}.atab.on{color:var(--g);border-color:var(--g30);background:var(--g10)}
-.awel{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:rgba(66,247,152,.06);border:1px solid var(--g20);border-radius:14px;margin-bottom:20px;flex-wrap:wrap;gap:10px}
-.awel-name{font-family:var(--fd);font-size:20px;color:var(--g);letter-spacing:.04em}
-
-/* Ranking admin */
-.rank-row{display:grid;grid-template-columns:36px 1fr 80px 80px 80px 100px;gap:8px;align-items:center;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.05);font-family:var(--fl);font-size:13px}
-.rank-row.top4-row{background:rgba(66,247,152,.06)}
-.rank-n{font-family:var(--fd);font-size:18px;color:var(--steel)}
-.rank-n.top{color:var(--g)}
-.rank-total{font-family:var(--fd);font-size:20px;color:var(--g);text-align:right}
-
-/* Fields */
-.field{margin-bottom:17px}
-.field label{display:block;margin-bottom:6px;font-family:var(--fl);font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--steel)}
-.fi{width:100%;background:var(--panel);border:1px solid rgba(135,145,154,.22);border-radius:12px;padding:10px 13px;color:var(--wh);font-family:var(--fb);font-size:14px;outline:none;transition:border-color .2s}
-.fi:focus{border-color:var(--g);box-shadow:0 0 0 3px var(--g10)}
-.fi:disabled{opacity:.4;cursor:not-allowed}
-select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath fill='%2342F798' d='M5 6L0 0h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;background-size:9px;cursor:pointer}
-select.fi option{background:#0d1f17;color:var(--wh)}
-.team-list{display:flex;flex-direction:column;gap:8px;max-height:400px;overflow-y:auto;margin-bottom:14px}
-.team-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--panel);border:1px solid rgba(135,145,154,.15);border-radius:12px;cursor:pointer;transition:all .2s}
-.team-item:hover{border-color:var(--g20)}.team-item.selected{border-color:var(--g30);background:rgba(66,247,152,.06)}
-
-/* Control */
-.ctrl-match{background:var(--panel);border:1px solid rgba(135,145,154,.18);border-radius:14px;padding:16px;margin-bottom:12px}
-.ctrl-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px}
-.ctrl-badge{font-family:var(--fd);font-size:18px;color:var(--g);margin-right:8px}
-.ctrl-winner{font-family:var(--fl);font-size:12px;font-weight:700;color:var(--g);letter-spacing:.06em}
-.ctrl-names{display:grid;grid-template-columns:1fr 28px 1fr auto;gap:8px;align-items:center;margin-bottom:12px}
-.ctrl-vs{font-family:var(--fd);font-size:12px;color:var(--steel);text-align:center}
-.adv-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
-.adv-lbl{font-family:var(--fl);font-size:10px;color:var(--steel);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
-
-/* Msgs */
-.msg{padding:12px 16px;border-radius:12px;font-family:var(--fl);font-size:13px;font-weight:600;letter-spacing:.04em;margin-top:12px;display:none}
-.msg.on{display:block}
-.ms{background:rgba(66,247,152,.11);border:1px solid var(--g30);color:var(--g)}
-.me{background:rgba(255,85,85,.1);border:1px solid rgba(255,85,85,.3);color:#ff6b6b}
-.mi{background:rgba(135,145,154,.1);border:1px solid rgba(135,145,154,.28);color:var(--steel)}
-
-/* Misc */
-.foot{border-top:1px solid var(--cbr);padding:24px 20px;text-align:center}
-.fbr{font-family:var(--fd);font-size:16px;letter-spacing:.06em;color:var(--steel);margin-bottom:6px}
-.fbr em{color:var(--g);font-style:normal}
-.fmeta{font-family:var(--fl);font-size:11px;color:rgba(135,145,154,.5);letter-spacing:.08em}
-#lupd{font-family:var(--fl);font-size:10px;color:rgba(135,145,154,.35);margin-top:5px}
-.cont{max-width:1300px;margin:0 auto;padding:0 20px}
-.nostyle{font-family:var(--fl);font-size:13px;color:var(--steel);padding:10px 0}
-.spin{display:inline-block;width:14px;height:14px;border:2px solid var(--g30);border-top-color:var(--g);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:5px}
-.divider{height:1px;background:var(--cbr);margin:16px 0}
-.btn{display:inline-flex;align-items:center;gap:7px;padding:11px 26px;font-family:var(--fl);font-weight:700;font-size:13px;letter-spacing:.08em;text-transform:uppercase;border:none;cursor:pointer;border-radius:999px;transition:all .22s;text-decoration:none;white-space:nowrap}
-.bp{background:var(--g);color:var(--blk)}.bp:hover{background:#5bffa8;box-shadow:0 0 22px rgba(66,247,152,.5);transform:translateY(-1px)}
-.bo{background:transparent;color:var(--g);border:1px solid var(--g30)}.bo:hover{background:var(--g10);border-color:var(--g)}
-.bg{background:transparent;color:var(--steel);border:1px solid rgba(135,145,154,.3)}.bg:hover{color:var(--wh);border-color:var(--steel)}
-.bd{background:transparent;color:#ff5555;border:1px solid rgba(255,85,85,.3)}.bd:hover{background:rgba(255,85,85,.1)}
-.bw{background:rgba(255,255,255,.07);color:var(--wh);border:1px solid rgba(255,255,255,.15)}.bw:hover{background:rgba(255,255,255,.12)}
-.btn:disabled{opacity:.4;cursor:not-allowed;transform:none!important}
-.blg{padding:14px 36px;font-size:15px}.bsm{padding:6px 14px;font-size:11px}
-
-@keyframes pdot{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(66,247,152,.4)}50%{opacity:.7;box-shadow:0 0 0 5px rgba(66,247,152,0)}}
-@keyframes tpulse{0%,100%{box-shadow:0 0 24px rgba(66,247,152,.2),0 0 0 0 rgba(66,247,152,.25)}50%{box-shadow:0 0 40px rgba(66,247,152,.36),0 0 0 10px rgba(66,247,152,0)}}
+/* ══════════════════════════════════════════════
+   SPINNER
+══════════════════════════════════════════════ */
+.spinner{
+  width:16px;height:16px;border:2px solid rgba(66,247,152,.2);
+  border-top-color:var(--accent);border-radius:50%;
+  animation:spin .7s linear infinite;display:inline-block;vertical-align:middle;
+}
 @keyframes spin{to{transform:rotate(360deg)}}
-@media(max-width:900px){.jgrid{grid-template-columns:1fr}.tabs{gap:2px}.tab{padding:6px 11px;font-size:11px}.rank-row{grid-template-columns:28px 1fr 60px 60px}}
-@media(max-width:600px){.stats-nums{gap:12px}.ctrl-names{grid-template-columns:1fr 20px 1fr}}
+.loading-overlay{
+  display:flex;align-items:center;justify-content:center;
+  min-height:200px;gap:10px;color:var(--txt2);font-size:13px;
+}
+
+/* ══════════════════════════════════════════════
+   DIVIDER
+══════════════════════════════════════════════ */
+.divider{height:1px;background:var(--border);margin:20px 0}
+
+/* ══════════════════════════════════════════════
+   BRACKET
+══════════════════════════════════════════════ */
+.bracket-scroll{overflow-x:auto;padding:32px 0 20px}
+.bracket-wrap{position:relative;margin:0 auto}
+
+.match-card{
+  position:absolute;
+  background:#0a0a0a;border:1px solid var(--border2);
+  border-radius:var(--r2);overflow:hidden;
+  box-shadow:0 2px 16px rgba(0,0,0,.6);
+  transition:border-color .2s;
+}
+.match-card:hover{border-color:var(--g30)}
+.match-card.locked{border-color:rgba(66,247,152,.3);box-shadow:0 2px 20px rgba(66,247,152,.06)}
+
+.match-header{
+  padding:5px 10px;background:var(--g10);
+  font-size:9px;font-weight:700;color:var(--g);
+  text-transform:uppercase;letter-spacing:.1em;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.match-phase-gold .match-header{background:rgba(255,215,0,.06);color:var(--gold)}
+
+.team-row{
+  display:flex;align-items:center;gap:8px;padding:8px 10px;
+  border-top:1px solid var(--border);cursor:default;
+  transition:background .15s;
+}
+.team-row.winner{background:rgba(66,247,152,.07)}
+.team-row.loser{opacity:.45}
+.team-row.winner .team-name{color:var(--accent);font-weight:700}
+
+.team-name{font-size:12px;font-weight:500;flex:1;min-width:0;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--txt)}
+.team-score{
+  font-family:var(--fd);font-size:15px;font-weight:700;
+  color:var(--txt);min-width:28px;text-align:right;
+}
+.team-empty{color:var(--g30);font-style:italic}
+
+.bracket-col-label{
+  position:absolute;top:0;font-size:10px;font-weight:700;
+  color:var(--g);text-transform:uppercase;letter-spacing:.12em;
+  text-align:center;
+}
+.trophy-icon{
+  position:absolute;font-size:44px;text-align:center;
+  filter:drop-shadow(0 0 16px rgba(255,215,0,.4));
+}
+.bronze-badge{
+  position:absolute;font-size:10px;font-weight:700;color:var(--bronze);
+  text-transform:uppercase;letter-spacing:.08em;
+}
+
+/* ══════════════════════════════════════════════
+   GROUP STAGE TABLE
+══════════════════════════════════════════════ */
+.group-table{width:100%;border-collapse:collapse;margin-top:8px}
+.group-table th{
+  font-size:10px;font-weight:700;color:var(--txt2);
+  text-transform:uppercase;letter-spacing:.08em;
+  padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);
+}
+.group-table th.center{text-align:center}
+.group-table td{
+  padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.04);
+  font-size:13px;vertical-align:middle;
+}
+.group-table td.center{text-align:center}
+.group-table tr:last-child td{border-bottom:none}
+.group-table tr:hover td{background:var(--g10)}
+.group-table tr.qualified td{background:rgba(66,247,152,.04)}
+.group-table tr.qualified .rank-badge{background:var(--accent);color:#000}
+.rank-badge{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:22px;height:22px;border-radius:50%;
+  background:var(--g20);color:var(--txt2);
+  font-family:var(--fd);font-size:11px;font-weight:700;
+}
+.score-big{
+  font-family:var(--fd);font-size:16px;font-weight:700;color:var(--accent);
+}
+.score-null{color:var(--g);font-size:13px}
+
+/* ══════════════════════════════════════════════
+   EMPRESA CARDS
+══════════════════════════════════════════════ */
+.empresa-card{
+  background:var(--g10);border:1px solid var(--border);border-radius:var(--r2);
+  padding:14px 16px;display:flex;align-items:center;gap:16px;
+  transition:border-color .2s;
+}
+.empresa-card:hover{border-color:var(--border2)}
+.empresa-logo{width:52px;height:52px;border-radius:50%;object-fit:cover;
+  flex-shrink:0;border:2px solid var(--border2)}
+.empresa-logo-init{
+  width:52px;height:52px;border-radius:50%;background:var(--g20);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--fd);font-size:20px;font-weight:700;color:var(--g);
+  flex-shrink:0;border:2px solid var(--border2);
+}
+.empresa-info{flex:1;min-width:0}
+.empresa-name{font-family:var(--fd);font-size:14px;font-weight:700;color:var(--txt)}
+.empresa-meta{font-size:11px;color:var(--txt2);margin-top:2px}
+.empresa-actions{display:flex;gap:8px;flex-shrink:0}
+
+/* ══════════════════════════════════════════════
+   INNER TABS (admin)
+══════════════════════════════════════════════ */
+.inner-tabs{display:flex;gap:2px;margin-bottom:20px;border-bottom:1px solid var(--border)}
+.inner-tab{
+  padding:7px 16px;border-radius:5px 5px 0 0;
+  font-size:12px;font-weight:700;background:transparent;
+  color:var(--txt2);border:1px solid transparent;border-bottom:none;
+  transition:all .2s;letter-spacing:.02em;
+}
+.inner-tab.active{background:var(--g10);color:var(--accent);border-color:var(--border)}
+.inner-tab:hover:not(.active){color:var(--txt);background:var(--g10)}
+.inner-panel{display:none}
+.inner-panel.active{display:block}
+
+/* ══════════════════════════════════════════════
+   GROUP BUILDER
+══════════════════════════════════════════════ */
+.group-slot{
+  background:var(--g10);border:1px solid var(--border);border-radius:var(--r2);
+  padding:14px 16px;display:grid;
+  grid-template-columns:40px 1fr;
+  align-items:center;gap:12px;margin-bottom:8px;
+}
+.slot-num{
+  font-family:var(--fd);font-size:18px;font-weight:700;
+  color:var(--accent);text-align:center;
+}
+.slot-selects{display:flex;flex-direction:column;gap:6px}
+.slot-selects select{width:100%}
+.slot-selects input{
+  background:var(--g20);border:1px solid var(--border);border-radius:var(--r3);
+  padding:7px 12px;font-size:12px;color:var(--txt);outline:none;
+}
+.slot-selects input:focus{border-color:var(--accent)}
+
+/* ══════════════════════════════════════════════
+   PHASE BANNER
+══════════════════════════════════════════════ */
+.phase-banner{
+  text-align:center;padding:60px 24px;
+}
+.phase-banner .phase-icon{font-size:56px;margin-bottom:20px}
+.phase-banner h2{font-size:30px;margin-bottom:8px;color:var(--accent)}
+.phase-banner p{color:var(--txt2);max-width:420px;margin:0 auto 24px;font-size:14px}
+
+/* ══════════════════════════════════════════════
+   MODAL
+══════════════════════════════════════════════ */
+.modal-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);
+  z-index:200;align-items:center;justify-content:center;padding:20px;
+}
+.modal-overlay.open{display:flex}
+.modal{
+  background:#0d0d0d;border:1px solid var(--border2);
+  border-radius:var(--r);padding:28px;width:100%;max-width:520px;
+  max-height:90vh;overflow-y:auto;position:relative;
+}
+.modal-close{
+  position:absolute;top:14px;right:14px;background:transparent;
+  color:var(--g);font-size:16px;border:none;cursor:pointer;
+  width:28px;height:28px;display:flex;align-items:center;justify-content:center;
+  border-radius:50%;transition:background .2s;
+}
+.modal-close:hover{background:var(--g20);color:var(--txt)}
+.modal h3{font-family:var(--fd);font-size:17px;margin-bottom:20px;color:var(--txt)}
+
+/* ══════════════════════════════════════════════
+   VOTE CARDS (juror)
+══════════════════════════════════════════════ */
+.vote-card{
+  background:var(--g10);border:1px solid var(--border);border-radius:var(--r2);
+  padding:20px;margin-bottom:14px;
+}
+.vote-card-title{
+  font-family:var(--fd);font-size:14px;font-weight:700;color:var(--txt);
+  margin-bottom:12px;display:flex;align-items:center;gap:10px;
+}
+.vote-company{
+  display:flex;align-items:center;gap:10px;
+  padding:12px 16px;background:#111;border-radius:var(--r3);
+  border:1px solid var(--border);margin-bottom:10px;
+}
+.score-wrap{display:flex;align-items:center;gap:8px;margin-top:12px;flex-wrap:wrap}
+.score-wrap label{font-size:11px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.06em;min-width:60px}
+.score-wrap input{
+  width:100px;background:var(--g10);border:1px solid var(--border2);
+  border-radius:var(--r3);padding:8px 12px;font-size:18px;font-weight:700;
+  font-family:var(--fd);color:var(--accent);text-align:center;outline:none;
+}
+.score-wrap input:focus{border-color:var(--accent)}
+
+/* ══════════════════════════════════════════════
+   INFO TABLE
+══════════════════════════════════════════════ */
+.info-table{width:100%;border-collapse:collapse}
+.info-table th{font-size:10px;font-weight:700;color:var(--txt2);
+  text-transform:uppercase;letter-spacing:.08em;padding:9px 12px;
+  text-align:left;border-bottom:1px solid var(--border)}
+.info-table td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px}
+.info-table tr:last-child td{border-bottom:none}
+.info-table tr:hover td{background:var(--g10)}
+
+/* ══════════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════════ */
+@media(max-width:700px){
+  .main{padding:16px}
+  .hdr{padding:0 16px}
+  .nav{padding:12px 16px 0;gap:2px}
+  .nav-btn{padding:6px 12px;font-size:12px}
+}
 </style>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
 </head>
 <body>
 
-<script>
-const CFG={
-  BACKEND_URL:'https://script.google.com/macros/s/AKfycbwBis9IoKHduEJtvKuo1WbYp9EgqqZ2m_fI5N2OzJiS4v3ZPazzZGSPn_K5WRRXx9Iy2g/exec',
-  REFRESH_INTERVAL:7000,
-  EVENT_DATE:'27 Mayo 2026',
-  EVENT_VENUE:'Cámara de Diputados · CDMX',
-};
-
-/* ── Estado global ── */
-let STATE=null;
-let USER_ROLE='public',USER_NAME='',USER_TOKEN='';
-let JUROR=null,SEL_MATCH=null,SEL_TEAM=null;
-let VOTED_MATCHES=new Set();
-let MY_SCORES={};   // { teamId: { s1,s2,s3,total } }
-let MY_SCORES_LOADED=false;
-let ADMIN_TOKEN_VAL='',ADMIN_NAME='',ADMIN_TEAMS=[];
-
-/* ── Utils ── */
-function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/</g,'&lt;');}
-function showMsg(id,html,cls){
-  const el=document.getElementById(id);if(!el)return;
-  el.innerHTML=html;el.className='msg'+(cls?' '+cls:'')+(html?' on':'');
-}
-function showTab(name){
-  document.querySelectorAll('.pg').forEach(s=>s.classList.remove('on'));
-  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));
-  const sec=document.getElementById('pg-'+name);if(sec)sec.classList.add('on');
-  const btn=[...document.querySelectorAll('.tab')].find(b=>b.dataset.tab===name);
-  if(btn)btn.classList.add('on');
-}
-
-/* ── API ── */
-async function apiCall(params){
-  const p=new URLSearchParams({...params,_:Date.now()});
-  const r=await fetch(CFG.BACKEND_URL+'?'+p.toString(),{cache:'no-store'});
-  if(!r.ok)throw new Error('HTTP '+r.status);
-  return r.json();
-}
-
-/* ── Load & render ── */
-async function load(){
-  try{
-    const s=await apiCall({action:'getState'});
-    STATE=s;
-    if(STATE.matches){
-      const seen=new Set();
-      STATE.matches=STATE.matches.filter(m=>{if(!seen.has(m.matchId)){seen.add(m.matchId);return true;}return false;});
-    }
-    renderAll();
-  }catch(e){console.warn('load:',e);}
-}
-
-function renderAll(){
-  if(!STATE)return;
-  renderStatsBar();
-  renderPhaseView();
-  renderOpenMatches();
-  const el=document.getElementById('lupd');
-  if(el)el.textContent='Actualizado: '+new Date().toLocaleTimeString('es-MX');
-  if(ADMIN_TOKEN_VAL){
-    const ct=document.getElementById('atab-control');
-    if(ct&&ct.style.display!=='none')renderControl();
-    const pr=document.getElementById('atab-phase');
-    if(pr&&pr.style.display!=='none')renderPhaseAdmin();
-  }
-}
-
-/* ── Stats Bar ── */
-function renderStatsBar(){
-  const s=STATE, ph=s.phase||'1';
-  anim('sb-pymes',s.teams?s.teams.length:0);
-  anim('sb-votos',ph==='1'?(s.scoresCount||0):(s.votesCount||0));
-  anim('sb-jurados',s.jurorsCount||0);
-  const ch=s.champion||null;
-  const chEl=document.getElementById('sb-champ');
-  if(chEl)chEl.textContent=ch||'—';
-  // Phase badge
-  const pbEl=document.getElementById('phase-badge');
-  if(pbEl){
-    pbEl.textContent=s.phaseLabel||'Fase '+ph;
-    pbEl.className='phase-badge phase-'+ph;
-  }
-}
-function anim(id,target){
-  const el=document.getElementById(id);if(!el)return;
-  const start=parseInt(el.textContent)||0;if(start===target)return;
-  const steps=16,inc=(target-start)/steps;let cur=start,i=0;
-  const t=setInterval(()=>{cur+=inc;i++;el.textContent=Math.round(cur);if(i>=steps){el.textContent=target;clearInterval(t);}},28);
-}
-
-/* ══════════════════════════════════════════
-   FASE 1 — Scoreboard público
-══════════════════════════════════════════ */
-function renderPhaseView(){
-  const ph=STATE&&STATE.phase||'1';
-  const sbEl=document.getElementById('phase-view');if(!sbEl)return;
-  if(ph==='1'){
-    renderScoreboard();
-  } else {
-    renderBracket();
-  }
-}
-
-function renderScoreboard(){
-  const el=document.getElementById('phase-view');if(!el)return;
-  const rankings=STATE.rankings||[];
-  const teams=STATE.teams||[];
-  const totalJurors=STATE.totalJurors||12;
-
-  if(!teams.length){
-    el.innerHTML='<div class="scoreboard-wrap"><div class="nostyle">No hay PyMEs registradas aún.</div></div>';
-    return;
-  }
-
-  // Merge teams with rankings
-  const ranked=teams.map(t=>{
-    const r=rankings.find(x=>x.teamId===t.teamId);
-    return { ...t, avgTotal:r?r.avgTotal:0, avgInnovation:r?r.avgInnovation:0,
-             avgScalability:r?r.avgScalability:0, avgImpact:r?r.avgImpact:0,
-             jurorCount:r?r.jurorCount:0, hasScore:!!r };
-  }).sort((a,b)=>b.avgTotal-a.avgTotal);
-
-  el.innerHTML=`
-  <div class="scoreboard-wrap">
-    <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:24px">
-      <div>
-        <div class="sb-title">CLASIFICACIÓN EN VIVO</div>
-        <div class="sb-sub">Los jurados están evaluando a las 10 PyMEs · Top 4 avanzan a Semifinales</div>
-      </div>
-      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
-        <div style="font-family:var(--fl);font-size:12px;color:var(--steel);letter-spacing:.06em">JURADOS QUE HAN CALIFICADO</div>
-        <div style="font-family:var(--fd);font-size:36px;color:var(--g);line-height:1">${STATE.jurorsCount||0}<span style="font-size:20px;color:var(--steel)">/${totalJurors}</span></div>
-      </div>
-    </div>
-    <table class="sb-table">
-      <thead>
-        <tr>
-          <th style="width:48px">#</th>
-          <th>Empresa</th>
-          <th class="right">Innovación<br><span style="font-weight:400;opacity:.6">×40%</span></th>
-          <th class="right">Escalab.<br><span style="font-weight:400;opacity:.6">×35%</span></th>
-          <th class="right">Impacto<br><span style="font-weight:400;opacity:.6">×25%</span></th>
-          <th class="right">Total</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${ranked.map((t,i)=>{
-          const isTop=(i<4)&&t.hasScore;
-          const pct=t.hasScore?Math.round((t.avgTotal/5)*100):0;
-          return`<tr class="sb-row ${isTop?'top4':''}">
-            <td><span class="sb-rank ${isTop?'top':''}">${t.hasScore?i+1:'—'}</span></td>
-            <td>
-              <div style="font-weight:700">${esc(t.name)}${isTop?'<span class="top4-label">TOP 4</span>':''}</div>
-              <div style="font-family:var(--fl);font-size:11px;color:var(--steel);margin-top:2px">${esc(t.category||'')} · Evaluado por ${t.jurorCount} jurado${t.jurorCount!==1?'s':''}</div>
-            </td>
-            <td class="right">${t.hasScore?'<span style="font-family:var(--fd);font-size:16px">'+t.avgInnovation+'</span>':'—'}</td>
-            <td class="right">${t.hasScore?'<span style="font-family:var(--fd);font-size:16px">'+t.avgScalability+'</span>':'—'}</td>
-            <td class="right">${t.hasScore?'<span style="font-family:var(--fd);font-size:16px">'+t.avgImpact+'</span>':'—'}</td>
-            <td class="right">
-              ${t.hasScore?`
-                <div class="sb-score">${t.avgTotal}</div>
-                <div class="sb-bar-wrap"><div class="sb-bar" style="width:${pct}%"></div></div>
-              `:'<span class="sb-score grey">—</span>'}
-            </td>
-          </tr>`;
-        }).join('')}
-      </tbody>
-    </table>
-  </div>`;
-}
-
-/* ══════════════════════════════════════════
-   FASE 2-3 — Bracket
-══════════════════════════════════════════ */
-function matchHTML(m,fin=false){
-  if(!m)return'<div class="mc" style="opacity:.22;min-height:88px;"></div>';
-  const st=m.status.toLowerCase();
-  const wA=m.winner&&m.teamA&&m.winner===m.teamA.teamId;
-  const wB=m.winner&&m.teamB&&m.winner===m.teamB.teamId;
-  const wName=wA?m.teamA.name:wB?m.teamB.name:'';
-  const tbd=!m.teamA&&!m.teamB;
-  const sA=m.scoreA||0,sB=m.scoreB||0;
-  return`<div class="mc ${st==='open'?'mopen':''} ${fin?'mfin':''}">
-    <div class="mhdr"><span class="mid">${m.matchId}</span><span class="badge b${st}">${m.status}</span></div>
-    <div class="mteam ${wA?'mwin':''}"><span class="mname ${tbd?'tbd':''}">${m.teamA?esc(m.teamA.name):'Por definir'}</span><span class="mscore ${sA===0?'z':''}">${sA}</span></div>
-    <div class="mteam ${wB?'mwin':''}"><span class="mname ${tbd?'tbd':''}">${m.teamB?esc(m.teamB.name):'Por definir'}</span><span class="mscore ${sB===0?'z':''}">${sB}</span></div>
-    <div class="mbar ${wName?'vis':''}">✦ GANADOR: ${esc(wName)}</div>
-  </div>`;
-}
-
-function renderBracket(){
-  const el=document.getElementById('phase-view');if(!el)return;
-  const ms=STATE&&STATE.matches;
-  if(!ms||!ms.length){
-    el.innerHTML='<div style="text-align:center;padding:60px 20px;font-family:var(--fl);font-size:14px;color:var(--steel)">El bracket se generará al lanzar la Fase 2.</div>';
-    return;
-  }
-  const b={};ms.forEach(m=>{b[m.matchId]=m;});
-  const champion=STATE.champion||null;
-  const ph=STATE.phase||'2';
-
-  el.innerHTML=`
-  <div class="bracket-section">
-    <div style="text-align:center;margin-bottom:28px">
-      <div style="font-family:var(--fl);font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--g);margin-bottom:8px">
-        ${ph==='3'?'Gran Final':'Eliminación directa — Top 4'}
-      </div>
-      <div style="font-family:var(--fd);font-size:clamp(26px,5vw,52px);color:var(--wh);letter-spacing:.02em">
-        ${ph==='3'?'🏆 GRAN FINAL':'SEMIFINALES & FINAL'}
-      </div>
-    </div>
-
-    <!-- Semifinales -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:900px;margin:0 auto 32px">
-      <div>
-        <div style="font-family:var(--fl);font-size:10px;font-weight:700;color:var(--steel);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;text-align:center">
-          Semifinal 1 · #1 vs #4
-        </div>
-        ${matchHTML(b['SF1'])}
-      </div>
-      <div>
-        <div style="font-family:var(--fl);font-size:10px;font-weight:700;color:var(--steel);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;text-align:center">
-          Semifinal 2 · #2 vs #3
-        </div>
-        ${matchHTML(b['SF2'])}
-      </div>
-    </div>
-
-    <!-- Línea divisora con trophy -->
-    <div style="display:flex;align-items:center;gap:20px;max-width:600px;margin:0 auto 24px">
-      <div style="flex:1;height:2px;background:linear-gradient(to right,transparent,var(--g30))"></div>
-      <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
-        <div class="ticon">🏆</div>
-        <div class="tlab">INNOVATION CUP</div>
-        ${champion?`<div class="chname">${esc(champion)}</div>`:''}
-      </div>
-      <div style="flex:1;height:2px;background:linear-gradient(to left,transparent,var(--g30))"></div>
-    </div>
-
-    <!-- Final -->
-    <div style="max-width:400px;margin:0 auto 20px">
-      <div style="font-family:var(--fl);font-size:10px;font-weight:700;color:var(--g);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;text-align:center">Gran Final</div>
-      ${matchHTML(b['FIN'],true)}
-    </div>
-
-    <!-- 3er lugar -->
-    ${b['TPL']&&(b['TPL'].teamA||b['TPL'].teamB)?`
-    <div style="max-width:360px;margin:0 auto">
-      <div style="font-family:var(--fl);font-size:10px;font-weight:700;color:var(--steel);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;text-align:center">🥉 Tercer lugar</div>
-      ${matchHTML(b['TPL'])}
-    </div>`:''}
-  </div>`;
-}
-
-/* ══════════════════════════════════════════
-   JURADO — Panel dinámico según fase
-══════════════════════════════════════════ */
-function renderOpenMatches(){
-  const ph=STATE&&STATE.phase||'1';
-  if(ph==='1'){
-    // En fase 1 el panel de votación no aplica
-    const oml=document.getElementById('oml');
-    if(oml)oml.innerHTML='<div class="nostyle">Fase 1: Usa el panel de evaluación de abajo para calificar las empresas.</div>';
-    const vf=document.getElementById('vform');if(vf)vf.style.display='none';
-  } else {
-    const open=STATE&&STATE.matches?STATE.matches.filter(m=>m.status==='OPEN'&&m.teamA&&m.teamB):[];
-    const list=document.getElementById('oml');if(!list)return;
-    if(!open.length){
-      list.innerHTML='<div class="nostyle">No hay matches abiertos ahora.</div>';
-      const vf=document.getElementById('vform');if(vf)vf.style.display='none';return;
-    }
-    list.innerHTML=open.map(m=>{
-      const voted=VOTED_MATCHES.has(m.matchId);
-      const active=SEL_MATCH&&SEL_MATCH.matchId===m.matchId;
-      return`<button class="omb ${active?'on':''} ${voted?'voted':''}" data-mid="${esc(m.matchId)}" onclick="selMatchBtn(this)">
-        <span>${esc(m.matchId)} — ${esc(m.teamA.name)} vs ${esc(m.teamB.name)}</span>
-        <div style="display:flex;align-items:center;gap:6px">
-          ${voted?'<span style="color:var(--g);font-size:18px">✓</span>':''}
-          <span class="badge bopen">OPEN</span>
-        </div>
-      </button>`;
-    }).join('');
-  }
-
-  // Scoring panel Fase 1
-  const sp=document.getElementById('scoring-panel-wrap');
-  if(sp){
-    if(ph==='1'&&JUROR){
-      sp.style.display='';
-      renderScoringPanel();
-    } else {
-      sp.style.display='none';
-    }
-  }
-}
-
-/* ── Scoring Panel Fase 1 ── */
-function renderScoringPanel(){
-  const el=document.getElementById('scoring-panel');if(!el)return;
-  const teams=STATE&&STATE.teams||[];
-  if(!teams.length){el.innerHTML='<div class="nostyle">No hay PyMEs registradas.</div>';return;}
-  el.innerHTML=teams.map(t=>{
-    const done=MY_SCORES[t.teamId];
-    return`<div class="score-card ${done?'done':''}" id="sc-${esc(t.teamId)}">
-      <div class="score-card-header">
-        <div>
-          <div class="score-team-name">${esc(t.name)}</div>
-          <div class="score-team-cat">${esc(t.category||'')} ${t.pais?'· '+esc(t.pais):''}</div>
-        </div>
-        ${done?`<div class="score-done-badge">✓ Evaluada · Total: ${done.total}/5</div>`:''}
-      </div>
-      ${done?`
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
-          <div style="text-align:center;background:var(--panel);border-radius:10px;padding:10px">
-            <div style="font-family:var(--fl);font-size:10px;color:var(--steel);letter-spacing:.08em;margin-bottom:4px">INNOVACIÓN</div>
-            <div style="font-family:var(--fd);font-size:28px;color:var(--g)">${done.s1}</div>
-          </div>
-          <div style="text-align:center;background:var(--panel);border-radius:10px;padding:10px">
-            <div style="font-family:var(--fl);font-size:10px;color:var(--steel);letter-spacing:.08em;margin-bottom:4px">ESCALABILIDAD</div>
-            <div style="font-family:var(--fd);font-size:28px;color:var(--g)">${done.s2}</div>
-          </div>
-          <div style="text-align:center;background:var(--panel);border-radius:10px;padding:10px">
-            <div style="font-family:var(--fl);font-size:10px;color:var(--steel);letter-spacing:.08em;margin-bottom:4px">IMPACTO</div>
-            <div style="font-family:var(--fd);font-size:28px;color:var(--g)">${done.s3}</div>
-          </div>
-        </div>
-      `:`
-        <div>
-          ${scoreCriteria(t.teamId,'s1','🚀 Innovación y uso de IA')}
-          ${scoreCriteria(t.teamId,'s2','📈 Escalabilidad y modelo de negocio')}
-          ${scoreCriteria(t.teamId,'s3','💥 Impacto y diferenciación')}
-          <div class="score-preview" id="prev-${esc(t.teamId)}">Total ponderado: <span>—</span></div>
-          <div style="margin-top:10px">
-            <button class="btn bp" style="width:100%;justify-content:center" data-tid="${esc(t.teamId)}" onclick="submitScore(this)">
-              ✦ Calificar empresa
-            </button>
-          </div>
-          <div class="msg" id="smsg-${esc(t.teamId)}"></div>
-        </div>
-      `}
-    </div>`;
-  }).join('');
-}
-
-function scoreCriteria(tid,key,label){
-  return`<div class="criteria-row">
-    <div class="crit-label">${label}</div>
-    <div class="score-btns">
-      ${[1,2,3,4,5].map(n=>`<button class="sb" data-tid="${esc(tid)}" data-key="${key}" data-val="${n}" onclick="selectScore(this)">${n}</button>`).join('')}
-    </div>
-  </div>`;
-}
-
-let PENDING_SCORES={};  // { tid: { s1:0, s2:0, s3:0 } }
-function selectScore(btn){
-  const tid=btn.dataset.tid,key=btn.dataset.key,val=parseInt(btn.dataset.val);
-  if(!PENDING_SCORES[tid])PENDING_SCORES[tid]={s1:0,s2:0,s3:0};
-  PENDING_SCORES[tid][key]=val;
-  // Update buttons visual
-  const parent=btn.closest('.score-btns');
-  parent.querySelectorAll('.sb').forEach(b=>{b.classList.toggle('sel',parseInt(b.dataset.val)===val);});
-  // Update preview
-  const ps=PENDING_SCORES[tid];
-  const total=ps.s1*0.4+ps.s2*0.35+ps.s3*0.25;
-  const prev=document.getElementById('prev-'+tid);
-  if(prev){
-    const t=(ps.s1&&ps.s2&&ps.s3)?total.toFixed(2):'—';
-    prev.innerHTML='Total ponderado: <span>'+t+'</span>';
-  }
-}
-
-async function submitScore(btn){
-  const tid=btn.dataset.tid;
-  const ps=PENDING_SCORES[tid]||{};
-  if(!ps.s1||!ps.s2||!ps.s3){showMsg('smsg-'+tid,'⚠️ Califica los 3 criterios antes de enviar.','me');return;}
-  if(!JUROR){showMsg('smsg-'+tid,'Primero verifica tu token de jurado.','me');return;}
-  btn.disabled=true;btn.innerHTML='<span class="spin"></span> Enviando...';
-  try{
-    const r=await apiCall({action:'submitScore',jurorToken:JUROR.token,teamId:tid,
-      scoreInnovation:ps.s1,scoreScalability:ps.s2,scoreImpact:ps.s3});
-    if(r.ok){
-      const total=ps.s1*0.4+ps.s2*0.35+ps.s3*0.25;
-      MY_SCORES[tid]={s1:ps.s1,s2:ps.s2,s3:ps.s3,total:total.toFixed(2)};
-      delete PENDING_SCORES[tid];
-      renderScoringPanel();
-      load();
-    }else showMsg('smsg-'+tid,r.message||'Error al enviar.','me');
-  }catch(e){showMsg('smsg-'+tid,'Error: '+e.message,'me');}
-  finally{if(btn){btn.disabled=false;btn.innerHTML='✦ Calificar empresa';}}
-}
-
-/* ── Cargar mis scores al hacer login ── */
-async function loadMyScores(){
-  if(!JUROR||MY_SCORES_LOADED)return;
-  try{
-    const r=await apiCall({action:'getMyScores',jurorToken:JUROR.token});
-    if(r.ok){
-      r.scores.forEach(s=>{MY_SCORES[s.teamId]={s1:s.s1,s2:s.s2,s3:s.s3,total:s.total};});
-      MY_SCORES_LOADED=true;
-      renderScoringPanel();
-    }
-  }catch(e){console.warn('loadMyScores:',e);}
-}
-
-/* ── Jurado voting Fase 2-3 ── */
-function selMatchBtn(btn){selMatch(btn.dataset.mid);}
-function selMatch(id){
-  const m=STATE.matches.find(x=>x.matchId===id);if(!m)return;
-  SEL_MATCH=m;SEL_TEAM=null;renderOpenMatches();
-  document.getElementById('vform').style.display='';
-  renderVoteButtons();showMsg('vmsg','','');
-}
-function selTeam(t){SEL_TEAM=t;renderVoteButtons();}
-function renderVoteButtons(){
-  if(!SEL_MATCH)return;
-  document.getElementById('tvbs').innerHTML=`
-    <button class="tvb ${SEL_TEAM==='A'?'on':''}" onclick="selTeam('A')">
-      <div class="tvsub">EQUIPO A</div><div>${esc(SEL_MATCH.teamA.name)}</div>
-    </button>
-    <button class="tvb ${SEL_TEAM==='B'?'on':''}" onclick="selTeam('B')">
-      <div class="tvsub">EQUIPO B</div><div>${esc(SEL_MATCH.teamB.name)}</div>
-    </button>`;
-}
-async function handleVote(){
-  if(!JUROR){showMsg('vmsg','Primero verifica tu token.','me');return;}
-  if(!SEL_MATCH){showMsg('vmsg','Selecciona un match.','me');return;}
-  if(!SEL_TEAM){showMsg('vmsg','Selecciona un equipo.','me');return;}
-  const tv=SEL_TEAM==='A'?SEL_MATCH.teamA:SEL_MATCH.teamB;
-  showMsg('vmsg','<span class="spin"></span> Registrando...','mi');
-  try{
-    const r=await apiCall({action:'castVote',jurorToken:JUROR.token,matchId:SEL_MATCH.matchId,
-      teamId:tv.teamId,confidence:document.getElementById('vconf').value,
-      comments:document.getElementById('vcom').value.trim()});
-    if(r.ok){
-      VOTED_MATCHES.add(SEL_MATCH.matchId);
-      showMsg('vmsg','✓ Voto registrado para '+SEL_MATCH.matchId+'.','ms');
-      SEL_MATCH=null;SEL_TEAM=null;
-      document.getElementById('vform').style.display='none';
-      document.getElementById('vcom').value='';load();
-    }else showMsg('vmsg',r.message||'Error.','me');
-  }catch(e){showMsg('vmsg','Error: '+e.message,'me');}
-}
-
-/* ══════════════════════════════════════════
-   LOGIN & ROLES
-══════════════════════════════════════════ */
-function showLoginOverlay(){document.getElementById('login-overlay').classList.add('vis');setTimeout(()=>document.getElementById('gtok').focus(),100);}
-function hideLoginOverlay(){document.getElementById('login-overlay').classList.remove('vis');document.getElementById('gtok').value='';showMsg('lmsg','','');}
-
-async function handleGlobalLogin(){
-  const tok=document.getElementById('gtok').value.trim();
-  if(!tok){showMsg('lmsg','Ingresa tu token.','me');return;}
-  showMsg('lmsg','<span class="spin"></span> Verificando...','mi');
-  // Admin?
-  try{
-    const r=await apiCall({action:'adminGetTeams',token:tok});
-    if(r.ok){
-      ADMIN_TOKEN_VAL=tok;ADMIN_NAME=r.adminName||'Admin';ADMIN_TEAMS=r.teams||[];
-      setRole('admin',r.adminName,tok);
-      document.getElementById('admin-login-box').style.display='none';
-      document.getElementById('admin-panel').style.display='';
-      document.getElementById('awel-name').textContent=r.adminName;
-      hideLoginOverlay();showTab('admin');
-      setTimeout(()=>showAdminTab('phase'),100);return;
-    }
-  }catch(e){}
-  // Jurado?
-  try{
-    const r=await apiCall({action:'verifyJuror',token:tok});
-    if(r.ok){
-      setRole('juror',r.jurorName,tok);
-      JUROR={token:tok,name:r.jurorName};
-      document.getElementById('jtok').value=tok;
-      document.getElementById('jwel').style.display='';
-      document.getElementById('jname').textContent=r.jurorName;
-      hideLoginOverlay();showTab('jury');
-      await loadMyScores();return;
-    }
-  }catch(e){}
-  showMsg('lmsg','Token no reconocido.','me');
-}
-
-function setRole(role,name,token){
-  USER_ROLE=role;USER_NAME=name;USER_TOKEN=token;
-  const jt=document.getElementById('nav-jury'),at=document.getElementById('nav-admin');
-  const lb=document.getElementById('nav-login-btn'),lo=document.getElementById('nav-logout-btn');
-  const ub=document.getElementById('nav-user');
-  if(role==='public'){
-    jt&&(jt.style.display='none');at&&(at.style.display='none');
-    lb&&(lb.style.display='');lo&&(lo.style.display='none');ub&&(ub.style.display='none');
-  }else if(role==='juror'){
-    jt&&(jt.style.display='');at&&(at.style.display='none');
-    lb&&(lb.style.display='none');lo&&(lo.style.display='');
-    ub&&(ub.style.display='');if(ub)ub.textContent='🟢 '+name;
-  }else if(role==='admin'){
-    jt&&(jt.style.display='');at&&(at.style.display='');
-    lb&&(lb.style.display='none');lo&&(lo.style.display='');
-    ub&&(ub.style.display='');if(ub)ub.textContent='⚡ '+name;
-  }
-}
-
-function logout(){
-  USER_ROLE='public';USER_NAME='';USER_TOKEN='';
-  JUROR=null;SEL_MATCH=null;SEL_TEAM=null;
-  VOTED_MATCHES=new Set();MY_SCORES={};MY_SCORES_LOADED=false;
-  ADMIN_TOKEN_VAL='';ADMIN_NAME='';ADMIN_TEAMS=[];
-  setRole('public','','');showTab('bracket');
-  document.getElementById('admin-login-box').style.display='';
-  document.getElementById('admin-panel').style.display='none';
-  document.getElementById('jtok').value='';
-  document.getElementById('jwel').style.display='none';
-}
-
-/* ══════════════════════════════════════════
-   ADMIN PANEL
-══════════════════════════════════════════ */
-function showAdminTab(name){
-  ['phase','pymes','jurados','control'].forEach(t=>{
-    const el=document.getElementById('atab-'+t);if(el)el.style.display=t===name?'':'none';
-    const btn=document.querySelector('[data-atab="'+t+'"]');
-    if(btn)btn.classList.toggle('on',t===name);
-  });
-  setTimeout(()=>{
-    if(name==='phase')  renderPhaseAdmin();
-    if(name==='pymes')  renderPymes();
-    if(name==='jurados')renderJurors();
-    if(name==='control')renderControl();
-  },50);
-}
-
-/* ── Phase Admin ── */
-function renderPhaseAdmin(){
-  const el=document.getElementById('atab-phase');if(!el||!STATE)return;
-  const ph=STATE.phase||'1';
-  const rankings=STATE.rankings||[];
-  const top4=rankings.slice(0,4);
-
-  el.innerHTML=`
-    <!-- Indicador de fase actual -->
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap">
-      <div style="font-family:var(--fl);font-size:12px;color:var(--steel);letter-spacing:.06em">FASE ACTUAL:</div>
-      <div class="phase-badge phase-${ph}">${STATE.phaseLabel||'Fase '+ph}</div>
-    </div>
-
-    ${ph==='1'?`
-    <!-- FASE 1: Ranking + lanzar Fase 2 -->
-    <div style="background:var(--panel);border:1px solid var(--cbr);border-radius:14px;padding:16px;margin-bottom:16px">
-      <div style="font-family:var(--fd);font-size:18px;color:var(--wh);margin-bottom:4px">CLASIFICACIÓN ACTUAL</div>
-      <div style="font-family:var(--fl);font-size:12px;color:var(--steel);margin-bottom:14px">
-        Empresas evaluadas: ${rankings.length}/10 · Evaluaciones totales: ${STATE.scoresCount||0}
-      </div>
-      ${rankings.length?`
-      <div>
-        <div style="display:grid;grid-template-columns:36px 1fr 80px 80px 80px 100px;gap:8px;padding:6px 14px;font-family:var(--fl);font-size:10px;font-weight:700;color:var(--steel);letter-spacing:.1em;text-transform:uppercase">
-          <div>#</div><div>Empresa</div><div class="right">Innov.</div><div class="right">Escal.</div><div class="right">Impact.</div><div class="right">Total</div>
-        </div>
-        ${rankings.map((t,i)=>`
-          <div class="rank-row ${i<4?'top4-row':''}">
-            <div class="rank-n ${i<4?'top':''}">${i+1}</div>
-            <div>
-              <div style="font-family:var(--fl);font-size:13px;font-weight:700">${esc(t.name)}</div>
-              <div style="font-family:var(--fl);font-size:11px;color:var(--steel)">${t.jurorCount} jurado${t.jurorCount!==1?'s':''}</div>
-            </div>
-            <div class="right" style="font-family:var(--fd);font-size:16px">${t.avgInnovation}</div>
-            <div class="right" style="font-family:var(--fd);font-size:16px">${t.avgScalability}</div>
-            <div class="right" style="font-family:var(--fd);font-size:16px">${t.avgImpact}</div>
-            <div class="rank-total">${t.avgTotal}</div>
-          </div>`).join('')}
-      </div>`:`<div class="nostyle">Aún no hay evaluaciones registradas.</div>`}
-    </div>
-
-    <!-- Lanzar Fase 2 automático si hay top 4 -->
-    ${top4.length>=4?`
-    <div style="background:rgba(66,247,152,.06);border:1px solid var(--g20);border-radius:14px;padding:16px;margin-bottom:16px">
-      <div style="font-family:var(--fd);font-size:16px;color:var(--g);margin-bottom:10px">TOP 4 AUTOMÁTICO</div>
-      ${top4.map((t,i)=>`
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
-          <span style="font-family:var(--fd);font-size:20px;color:var(--g);min-width:28px">#${i+1}</span>
-          <div><div style="font-family:var(--fl);font-size:14px;font-weight:700">${esc(t.name)}</div>
-          <div style="font-family:var(--fl);font-size:11px;color:var(--steel)">${t.avgTotal}/5</div></div>
-        </div>`).join('')}
-      <div style="font-family:var(--fl);font-size:11px;color:var(--steel);margin-top:8px">
-        SF1: #1 ${esc(top4[0].name)} vs #4 ${esc(top4[3].name)} · SF2: #2 ${esc(top4[1].name)} vs #3 ${esc(top4[2].name)}
-      </div>
-    </div>
-    <button class="btn bp blg" style="width:100%;justify-content:center;margin-bottom:12px" onclick="launchPhase2Auto()">
-      🚀 Lanzar Fase 2 con TOP 4 automático
-    </button>`:''}
-
-    <!-- Selección manual SIEMPRE disponible -->
-    <div style="background:var(--panel);border:1px solid var(--cbr);border-radius:14px;padding:16px;margin-bottom:4px">
-      <div style="font-family:var(--fd);font-size:16px;color:var(--wh);margin-bottom:4px">SELECCIÓN MANUAL</div>
-      <div style="font-family:var(--fl);font-size:12px;color:var(--steel);margin-bottom:14px">
-        Elige exactamente 4 empresas para las semifinales (independientemente de los puntajes).
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
-        ${['SF1-A (#1 Seed)','SF1-B (#4 Seed)','SF2-A (#2 Seed)','SF2-B (#3 Seed)'].map((label,i)=>`
-          <div>
-            <div style="font-family:var(--fl);font-size:10px;color:var(--steel);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">${label}</div>
-            <select class="fi" id="manual-slot-${i}">
-              <option value="">— Seleccionar empresa —</option>
-              ${(STATE.teams||[]).map(t=>`<option value="${esc(t.teamId)}" data-name="${esc(t.name)}">${esc(t.name)}</option>`).join('')}
-            </select>
-          </div>`).join('')}
-      </div>
-      <button class="btn bw blg" style="width:100%;justify-content:center" onclick="launchPhase2Manual()">
-        ⚡ Lanzar Fase 2 con selección manual
-      </button>
-    </div>
-    `:''}
-
-    ${ph==='2'?`
-    <!-- FASE 2: Ver bracket, lanzar Fase 3 -->
-    <div style="font-family:var(--fl);font-size:13px;color:var(--steel);margin-bottom:16px">
-      Las semifinales están en curso. Cuando ambas terminen, lanza la Fase 3.
-    </div>
-    <button class="btn bp blg" style="width:100%;justify-content:center;margin-bottom:10px" onclick="launchPhase3()">
-      🏆 Marcar Fase 3 — Gran Final
-    </button>
-    `:''}
-
-    ${ph==='3'?`
-    <div style="font-family:var(--fl);font-size:14px;color:var(--g);padding:16px;text-align:center;font-weight:700">
-      🏆 ¡Gran Final en curso!<br>
-      <span style="color:var(--steel);font-weight:400;font-size:12px">El campeón se anunciará automáticamente cuando los jurados terminen de votar.</span>
-    </div>
-    `:''}
-    `;
-}
-
-// Fase 2 automático (top 4 por puntaje)
-async function launchPhase2Auto(){
-  showMsg('amsg','<span class="spin"></span> Lanzando Fase 2 automática...','mi');
-  try{
-    const r=await apiCall({action:'adminLaunchPhase2',token:ADMIN_TOKEN_VAL});
-    showMsg('amsg',r.message||(r.ok?'✓ Fase 2 iniciada.':'✗ Error.'),r.ok?'ms':'me');
-    if(r.ok){load();setTimeout(()=>showAdminTab('control'),1000);}
-  }catch(e){showMsg('amsg','Error: '+e.message,'me');}
-}
-
-// Fase 2 manual — admin elige los 4 equipos
-async function launchPhase2Manual(){
-  const slots=[];
-  for(let i=0;i<4;i++){
-    const sel=document.getElementById('manual-slot-'+i);
-    if(!sel||!sel.value){showMsg('amsg','⚠️ Selecciona las 4 empresas para las semifinales.','me');return;}
-    const name=sel.options[sel.selectedIndex]?.dataset?.name||sel.options[sel.selectedIndex]?.text||sel.value;
-    slots.push({teamId:sel.value,name:name});
-  }
-  // Verificar que no haya repetidos
-  const ids=new Set(slots.map(s=>s.teamId));
-  if(ids.size!==4){showMsg('amsg','⚠️ Hay empresas repetidas. Cada empresa debe aparecer solo una vez.','me');return;}
-  showMsg('amsg','<span class="spin"></span> Lanzando Fase 2 con selección manual...','mi');
-  try{
-    const r=await apiCall({action:'adminLaunchPhase2',token:ADMIN_TOKEN_VAL,slots:JSON.stringify(slots)});
-    showMsg('amsg',r.message||(r.ok?'✓ Fase 2 iniciada.':'✗ Error.'),r.ok?'ms':'me');
-    if(r.ok){load();setTimeout(()=>showAdminTab('control'),1000);}
-  }catch(e){showMsg('amsg','Error: '+e.message,'me');}
-}
-
-async function launchPhase3(){
-  showMsg('amsg','<span class="spin"></span> Activando Fase 3...','mi');
-  try{
-    const r=await apiCall({action:'adminLaunchPhase3',token:ADMIN_TOKEN_VAL});
-    showMsg('amsg',r.message||(r.ok?'✓ Fase 3 activada.':'✗ Error.'),r.ok?'ms':'me');
-    if(r.ok)load();
-  }catch(e){showMsg('amsg','Error: '+e.message,'me');}
-}
-
-/* ── PyMEs ── */
-function renderPymes(){
-  const el=document.getElementById('atab-pymes');if(!el)return;
-  if(!ADMIN_TEAMS.length){el.innerHTML='<div class="nostyle">No hay PyMEs registradas.</div>';return;}
-  el.innerHTML=`
-    <div style="font-family:var(--fl);font-size:12px;color:var(--steel);margin-bottom:12px">${ADMIN_TEAMS.length} PyMEs registradas en el sistema</div>
-    <div class="team-list">
-      ${ADMIN_TEAMS.map(t=>`
-        <div class="team-item">
-          <div style="flex:1">
-            <div style="font-family:var(--fl);font-size:13px;font-weight:700;color:var(--wh)">${esc(t.name)}</div>
-            <div style="font-family:var(--fl);font-size:11px;color:var(--steel);margin-top:2px">${esc(t.teamId)} · ${esc(t.category||'')} · ${esc(t.pais||'')} ${esc(t.ciudad||'')}</div>
-          </div>
-        </div>`).join('')}
-    </div>`;
-}
-
-/* ── Jurados ── */
-async function renderJurors(){
-  const el=document.getElementById('atab-jurados');if(!el)return;
-  el.innerHTML=`
-    <div style="background:var(--panel);border:1px solid var(--cbr);border-radius:14px;padding:20px;margin-bottom:16px">
-      <div style="font-family:var(--fd);font-size:20px;color:var(--wh);margin-bottom:16px">AGREGAR JURADO</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
-        <div class="field" style="margin:0"><label>Nombre <span style="color:var(--g)">*</span></label>
-          <input class="fi" type="text" id="new-juror-name" placeholder="Nombre completo"/></div>
-        <div class="field" style="margin:0"><label>Token <span style="color:var(--steel)">(opcional)</span></label>
-          <input class="fi" type="text" id="new-juror-token" placeholder="Se genera automático"/></div>
-      </div>
-      <button class="btn bp" onclick="addJuror()" style="width:100%;justify-content:center">✦ Agregar jurado</button>
-    </div>
-    <div style="font-family:var(--fl);font-size:11px;color:var(--steel);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px">Jurados registrados</div>
-    <div id="jurors-list"><div class="nostyle"><span class="spin"></span> Cargando...</div></div>`;
-  try{
-    const r=await apiCall({action:'adminGetJurors',token:ADMIN_TOKEN_VAL});
-    const jl=document.getElementById('jurors-list');if(!jl)return;
-    const jurors=r.jurors||[];
-    jl.innerHTML=jurors.map(j=>`
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--panel);border:1px solid var(--cbr);border-radius:12px;margin-bottom:8px;gap:10px;flex-wrap:wrap">
-        <div style="flex:1">
-          <div style="font-family:var(--fl);font-size:13px;font-weight:700;color:var(--wh)">${esc(j.name)}</div>
-          <code style="font-family:monospace;font-size:12px;color:var(--g);background:rgba(66,247,152,.1);padding:2px 8px;border-radius:6px;display:inline-block;margin-top:4px">${esc(j.token)}</code>
-        </div>
-        <button class="btn bd bsm" data-tok="${esc(j.token)}" onclick="deleteJurorBtn(this)">✕ Eliminar</button>
-      </div>`).join('');
-  }catch(e){const jl=document.getElementById('jurors-list');if(jl)jl.innerHTML='<div class="nostyle">Error: '+e.message+'</div>';}
-}
-async function addJuror(){
-  const name=document.getElementById('new-juror-name').value.trim();
-  const tok=document.getElementById('new-juror-token').value.trim();
-  if(!name){showMsg('amsg','Ingresa el nombre del jurado.','me');return;}
-  showMsg('amsg','<span class="spin"></span> Agregando...','mi');
-  try{
-    const r=await apiCall({action:'adminAddJuror',token:ADMIN_TOKEN_VAL,jurorName:name,jurorToken:tok});
-    if(r.ok){showMsg('amsg','✓ '+r.jurorName+' — Token: <strong style="color:var(--g)">'+r.token+'</strong>','ms');
-      document.getElementById('new-juror-name').value='';document.getElementById('new-juror-token').value='';
-      renderJurors();}
-    else showMsg('amsg',r.message||'Error.','me');
-  }catch(e){showMsg('amsg','Error: '+e.message,'me');}
-}
-function deleteJurorBtn(btn){deleteJuror(btn.dataset.tok);}
-async function deleteJuror(tok){
-  showMsg('amsg','<span class="spin"></span> Eliminando...','mi');
-  try{
-    const r=await apiCall({action:'adminDeleteJuror',token:ADMIN_TOKEN_VAL,jurorToken:tok});
-    showMsg('amsg',r.message||(r.ok?'✓ Eliminado.':'✗ Error.'),r.ok?'ms':'me');
-    if(r.ok)renderJurors();
-  }catch(e){showMsg('amsg','Error: '+e.message,'me');}
-}
-
-/* ── Control ── */
-function renderControl(){
-  const el=document.getElementById('atab-control');if(!el||!STATE||!STATE.matches)return;
-  const ids=['SF1','SF2','FIN'];
-  const ms=STATE.matches.filter(m=>ids.includes(m.matchId));
-  if(!ms.length){el.innerHTML='<div class="nostyle">El bracket de Fase 2 aún no existe. Lánzalo desde la pestaña Fases.</div>';return;}
-  el.innerHTML=`
-    <div style="font-family:var(--fl);font-size:12px;color:var(--steel);margin-bottom:16px">Avanza equipos manualmente si es necesario.</div>
-    ${ms.map(m=>{
-      const closed=m.status==='CLOSED';
-      const hasBoth=m.teamA&&m.teamB;
-      const wName=m.winner?(m.teamA&&m.teamA.teamId===m.winner?m.teamA.name:m.teamB?m.teamB.name:''):'';
-      return`<div class="ctrl-match">
-        <div class="ctrl-head">
-          <div><span class="ctrl-badge">${m.matchId}</span>
-            <span class="badge b${m.status.toLowerCase()}">${m.status}</span>
-            <span style="font-family:var(--fl);font-size:11px;color:var(--steel);margin-left:8px">Votos: ${m.scoreA||0} - ${m.scoreB||0}</span>
-          </div>
-          ${closed?`<span class="ctrl-winner">✓ ${esc(wName)}</span>`:''}
-        </div>
-        ${hasBoth?`
-          <div class="ctrl-names">
-            <input class="fi" id="en-${m.matchId}-A" value="${esc(m.teamA.name)}" ${closed?'disabled':''}/>
-            <div class="ctrl-vs">VS</div>
-            <input class="fi" id="en-${m.matchId}-B" value="${esc(m.teamB.name)}" ${closed?'disabled':''}/>
-            ${!closed?`<button class="btn bo bsm" data-mid="${m.matchId}" onclick="saveNamesBtn(this)">💾</button>`:''}
-          </div>
-          ${!closed?`
-          <div class="adv-lbl">⚡ Avanzar manualmente</div>
-          <div class="adv-btns">
-            <button class="btn bp bsm" style="justify-content:center"
-              data-mid="${m.matchId}" data-wid="${esc(m.teamA.teamId)}" data-wname="${esc(m.teamA.name)}"
-              onclick="advanceBtn(this)">✦ ${esc(m.teamA.name)}</button>
-            <button class="btn bp bsm" style="justify-content:center"
-              data-mid="${m.matchId}" data-wid="${esc(m.teamB.teamId)}" data-wname="${esc(m.teamB.name)}"
-              onclick="advanceBtn(this)">✦ ${esc(m.teamB.name)}</button>
-          </div>`:''}
-        `:`<div class="nostyle" style="padding:4px 0">Esperando equipos...</div>`}
-      </div>`;
-    }).join('')}
-    <div class="divider"></div>
-    <button class="btn bd blg" style="justify-content:center;width:100%" onclick="handleReset()">🗑 Reiniciar todo el torneo</button>`;
-}
-
-function advanceBtn(btn){doAdvance(btn.dataset.mid,btn.dataset.wid,btn.dataset.wname);}
-async function doAdvance(matchId,winnerId,winnerName){
-  if(!ADMIN_TOKEN_VAL){showMsg('amsg','Sesión expirada.','me');return;}
-  showMsg('amsg','<span class="spin"></span> Avanzando a '+winnerName+'...','mi');
-  const msgEl=document.getElementById('amsg');if(msgEl)msgEl.scrollIntoView({behavior:'smooth',block:'center'});
-  try{
-    const r=await apiCall({action:'adminAdvanceMatch',token:ADMIN_TOKEN_VAL,matchId,winnerId});
-    showMsg('amsg',r.message||(r.ok?'✓ Avanzado.':'✗ Error.'),r.ok?'ms':'me');
-    if(r.ok)setTimeout(()=>load(),600);
-  }catch(e){showMsg('amsg','Error: '+e.message,'me');}
-}
-function saveNamesBtn(btn){saveNames(btn.dataset.mid);}
-async function saveNames(matchId){
-  const m=STATE&&STATE.matches?STATE.matches.find(x=>x.matchId===matchId):null;
-  const nA=document.getElementById('en-'+matchId+'-A')?.value.trim();
-  const nB=document.getElementById('en-'+matchId+'-B')?.value.trim();
-  showMsg('amsg','<span class="spin"></span> Guardando...','mi');
-  try{
-    const calls=[];
-    if(nA&&m&&m.teamA)calls.push(apiCall({action:'adminEditName',token:ADMIN_TOKEN_VAL,matchId,slot:'A',newName:nA}));
-    if(nB&&m&&m.teamB)calls.push(apiCall({action:'adminEditName',token:ADMIN_TOKEN_VAL,matchId,slot:'B',newName:nB}));
-    await Promise.all(calls);
-    showMsg('amsg','✓ Nombres actualizados.','ms');load();
-  }catch(e){showMsg('amsg','Error: '+e.message,'me');}
-}
-function handleReset(){
-  showMsg('amsg',`⚠️ <strong style="color:#ff5555">IRREVERSIBLE</strong> — Elimina votos, scores y bracket.<br>
-    <div style="display:flex;gap:8px;margin-top:12px">
-      <button class="btn bd bsm" onclick="confirmReset()">🗑 Sí, reiniciar</button>
-      <button class="btn bg bsm" onclick="showMsg('amsg','','')">Cancelar</button>
-    </div>`,'mi');
-  const el=document.getElementById('amsg');if(el)el.scrollIntoView({behavior:'smooth',block:'center'});
-}
-async function confirmReset(){
-  showMsg('amsg','<span class="spin"></span> Reiniciando...','mi');
-  try{
-    const r=await apiCall({action:'adminResetAll',token:ADMIN_TOKEN_VAL});
-    showMsg('amsg',r.message||(r.ok?'✓ Reiniciado.':'✗ Error.'),r.ok?'ms':'me');
-    if(r.ok){STATE=null;MY_SCORES={};MY_SCORES_LOADED=false;load();}
-  }catch(e){showMsg('amsg','Error: '+e.message,'me');}
-}
-
-/* ── Jurado panel helper ── */
-async function handleJurorVerify(){
-  const tok=document.getElementById('jtok').value.trim();
-  if(!tok){showMsg('jmsg','Ingresa tu token.','me');return;}
-  showMsg('jmsg','<span class="spin"></span> Verificando...','mi');
-  try{
-    const r=await apiCall({action:'verifyJuror',token:tok});
-    if(r.ok){
-      JUROR={token:tok,name:r.jurorName};
-      if(USER_ROLE==='public')setRole('juror',r.jurorName,tok);
-      showMsg('jmsg','','');
-      document.getElementById('jwel').style.display='';
-      document.getElementById('jname').textContent=r.jurorName;
-      await loadMyScores();
-      renderAll();
-    }else{showMsg('jmsg',r.message||'Token inválido.','me');JUROR=null;document.getElementById('jwel').style.display='none';}
-  }catch(e){showMsg('jmsg','Error: '+e.message,'me');}
-}
-
-document.addEventListener('DOMContentLoaded',()=>{
-  setRole('public','','');
-  load();
-  setInterval(load,CFG.REFRESH_INTERVAL);
-  document.getElementById('gtok').addEventListener('keydown',e=>{if(e.key==='Enter')handleGlobalLogin();});
-  document.getElementById('jtok').addEventListener('keydown',e=>{if(e.key==='Enter')handleJurorVerify();});
-});
-</script>
-
-<!-- LOGIN OVERLAY -->
-<div id="login-overlay" class="overlay" onclick="if(event.target===this)hideLoginOverlay()">
-  <div class="login-modal">
-    <div class="lm-title">ACCEDER</div>
-    <div class="lm-sub">Token de jurado o administrador</div>
-    <div class="field"><label>Token de acceso</label>
-      <input class="fi" type="password" id="gtok" placeholder="••••••••" autocomplete="off"/>
-    </div>
-    <button class="btn bp" style="width:100%;justify-content:center;margin-bottom:10px" onclick="handleGlobalLogin()">Verificar acceso</button>
-    <button class="btn bg bsm" style="width:100%;justify-content:center" onclick="hideLoginOverlay()">Cancelar</button>
-    <div class="msg" id="lmsg"></div>
+<!-- HEADER -->
+<header class="hdr">
+  <div class="col" style="gap:2px">
+    <span class="hdr-logo">Admaiora <span>· Innovation Cup</span></span>
+    <span class="hdr-sub">B2AI Disruptive Challenge 2026 · Cámara de Diputados · CDMX</span>
   </div>
-</div>
+  <div class="hdr-spacer"></div>
+  <span class="hdr-badge" id="phaseBadge">Cargando…</span>
+</header>
 
 <!-- NAV -->
 <nav class="nav">
-  <div class="nav-inner">
-    <div class="logo">ADMAIORA <em>·</em> CUP 2026</div>
-    <div class="tabs">
-      <button class="tab on" data-tab="bracket" onclick="showTab('bracket')"><span class="ldot"></span>Bracket</button>
-      <button class="tab" data-tab="register" onclick="showTab('register')">PyMEs</button>
-      <button class="tab" id="nav-jury" data-tab="jury" style="display:none" onclick="showTab('jury')">Jurado</button>
-      <button class="tab" id="nav-admin" data-tab="admin" style="display:none" onclick="showTab('admin')">Admin</button>
-    </div>
-    <div class="nav-right">
-      <span id="nav-user" class="nav-user"></span>
-      <button class="btn bg bsm" id="nav-login-btn" onclick="showLoginOverlay()">🔐 Acceder</button>
-      <button class="btn bd bsm" id="nav-logout-btn" style="display:none" onclick="logout()">Salir</button>
-    </div>
-  </div>
+  <button class="nav-btn active" onclick="showSection('bracket')">🏆 Bracket</button>
+  <button class="nav-btn" onclick="showSection('register')">📝 Registro</button>
+  <button class="nav-btn" id="jurorNavBtn" onclick="showSection('juror')" style="display:none">⚖️ Jurado</button>
+  <button class="nav-btn" id="adminNavBtn" onclick="showSection('admin')" style="display:none">🛡 Admin</button>
+  <button class="nav-btn" onclick="showSection('login')">🔑 Acceso</button>
 </nav>
 
-<!-- BRACKET / SCOREBOARD PAGE -->
-<div id="pg-bracket" class="pg on">
-  <!-- Stats bar -->
-  <div class="stats-bar">
-    <div class="stats-inner">
-      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-        <div class="stats-title"><span class="ldot"></span>B2AI <em style="color:var(--g)">INNOVATION CUP</em> 2026</div>
-        <span id="phase-badge" class="phase-badge phase-1">Fase 1</span>
-      </div>
-      <div class="stats-nums">
-        <div class="stat-num"><div class="stat-n" id="sb-pymes">—</div><div class="stat-l">PyMEs</div></div>
-        <div class="stat-num"><div class="stat-n" id="sb-votos">—</div><div class="stat-l">Evaluaciones</div></div>
-        <div class="stat-num"><div class="stat-n" id="sb-jurados">—</div><div class="stat-l">Jurados</div></div>
-        <div class="stat-num"><div class="stat-n" id="sb-champ" style="font-size:14px;padding-top:4px">—</div><div class="stat-l">Campeón</div></div>
-      </div>
-    </div>
-  </div>
-  <!-- Dynamic view (scoreboard o bracket según fase) -->
-  <div id="phase-view"></div>
-  <!-- Tercer lugar (solo fase clásica) -->
-  <div id="tpwrap" style="display:none" class="tpwrap">
-    <div style="text-align:center;margin-top:20px">
-      <div style="font-family:var(--fl);font-size:11px;color:var(--steel);letter-spacing:.15em;text-transform:uppercase;margin-bottom:10px">🥉 Tercer lugar</div>
-      <div id="tpcard" style="display:inline-block;max-width:280px;width:100%"></div>
-    </div>
-  </div>
-</div>
+<main class="main">
 
-<!-- PYMES PAGE -->
-<div id="pg-register" class="pg">
-  <div style="padding:56px 20px;background:var(--blk)">
-    <div class="cont">
-      <div style="text-align:center;margin-bottom:32px">
-        <div style="font-family:var(--fl);font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--g);margin-bottom:8px">Participa en el torneo</div>
-        <h2 style="font-family:var(--fd);font-size:clamp(24px,5vw,50px);color:var(--wh);letter-spacing:.02em">REGISTRA TU PYME</h2>
-      </div>
-      <div style="max-width:700px;margin:0 auto;background:var(--cb);border:1px solid var(--cbr);border-radius:var(--rl);padding:48px;text-align:center">
-        <div style="font-size:48px;margin-bottom:20px">🚀</div>
-        <div style="font-family:var(--fd);font-size:32px;color:var(--wh);margin-bottom:12px">¿LISTO PARA COMPETIR?</div>
-        <div style="font-family:var(--fl);font-size:16px;color:var(--steel);margin-bottom:32px;line-height:1.6;max-width:460px;margin-left:auto;margin-right:auto">
-          El registro oficial del B2AI Disruptive Challenge se realiza en nuestra página web.
+<!-- BRACKET -->
+<section id="sec-bracket" class="section active">
+  <div id="bracketContainer" class="loading-overlay">
+    <span class="spinner"></span> Cargando…
+  </div>
+</section>
+
+<!-- REGISTRO -->
+<section id="sec-register" class="section">
+  <div class="card" style="max-width:600px;margin:0 auto">
+    <h2 style="margin-bottom:4px;color:var(--accent)">Registro de PYME</h2>
+    <p style="color:var(--txt2);font-size:13px;margin-bottom:24px">
+      Crea el perfil de tu empresa para participar en el Innovation Cup 2026.
+    </p>
+    <div class="field" style="margin-bottom:20px">
+      <label>Logo (recomendado cuadrado, mín. 200×200 px)</label>
+      <div class="logo-upload-area" onclick="document.getElementById('logoFile').click()">
+        <input type="file" id="logoFile" accept="image/*" style="display:none" onchange="handleLogoSelect(event)"/>
+        <div id="logoPlaceholder">
+          <div class="logo-placeholder">🏢</div>
+          <p style="font-size:13px;color:var(--txt2)">Haz clic para subir tu logo</p>
+          <p style="font-size:11px;color:var(--g);margin-top:4px">PNG, JPG, WEBP · máx. 5 MB</p>
         </div>
-        <a href="https://www.admaioramx.com/challenge" target="_blank" class="btn bp blg" style="justify-content:center;display:inline-flex;margin-bottom:24px">✦ Ir al registro oficial</a>
-        <div style="font-family:var(--fl);font-size:12px;color:rgba(135,145,154,.5)">admaioramx.com/challenge</div>
+        <div id="logoPreviewWrap" style="display:none">
+          <img id="logoPreviewImg" class="logo-preview" alt=""/>
+          <p style="font-size:12px;color:var(--accent);margin-top:4px">✓ Logo seleccionado</p>
+        </div>
+      </div>
+    </div>
+    <div class="form-grid">
+      <div class="field"><label>Empresa *</label><input type="text" id="reg-empresa" placeholder="Nombre de tu empresa" maxlength="60"/></div>
+      <div class="field"><label>Founder / CEO *</label><input type="text" id="reg-founder" placeholder="Tu nombre completo" maxlength="60"/></div>
+      <div class="field"><label>Correo *</label><input type="email" id="reg-email" placeholder="correo@empresa.com"/></div>
+      <div class="field"><label>Teléfono</label><input type="tel" id="reg-tel" placeholder="+52 55 0000 0000"/></div>
+      <div class="field"><label>Redes sociales</label><input type="text" id="reg-redes" placeholder="@empresa" maxlength="200"/></div>
+      <div class="field"><label>Sitio web</label><input type="url" id="reg-website" placeholder="https://empresa.com"/></div>
+    </div>
+    <div id="regAlert" style="display:none" class="alert"></div>
+    <div style="margin-top:20px;display:flex;gap:12px;align-items:center">
+      <button class="btn btn-primary" id="regSubmitBtn" onclick="submitRegistration()">Registrar empresa</button>
+      <span style="font-size:11px;color:var(--g)">* campos requeridos</span>
+    </div>
+  </div>
+</section>
+
+<!-- JURADO -->
+<section id="sec-juror" class="section">
+  <div id="jurorContent">
+    <div class="loading-overlay"><span class="spinner"></span></div>
+  </div>
+</section>
+
+<!-- ADMIN -->
+<section id="sec-admin" class="section">
+  <div class="card">
+    <div class="row" style="margin-bottom:16px">
+      <h2>Panel Admin</h2>
+      <span class="tag tag-green" id="adminWelcome"></span>
+    </div>
+    <div class="inner-tabs">
+      <button class="inner-tab active" onclick="showAdminTab('empresas')">🏢 Empresas</button>
+      <button class="inner-tab" onclick="showAdminTab('grupo')">📊 Ronda Grupal</button>
+      <button class="inner-tab" onclick="showAdminTab('bracket')">🏆 Bracket QF</button>
+      <button class="inner-tab" onclick="showAdminTab('jurados')">⚖️ Jurados</button>
+      <button class="inner-tab" onclick="showAdminTab('control')">⚙️ Control</button>
+    </div>
+
+    <!-- Empresas -->
+    <div id="tab-empresas" class="inner-panel active">
+      <div class="row" style="margin-bottom:16px">
+        <h3 style="margin:0">Empresas registradas</h3>
+        <button class="btn btn-primary btn-sm" onclick="openAddTeamModal()">+ Agregar manual</button>
+        <button class="btn btn-ghost btn-sm" onclick="loadAdminEmpresas()">↻ Refrescar</button>
+      </div>
+      <div id="adminEmpresasList"><div class="loading-overlay"><span class="spinner"></span></div></div>
+    </div>
+
+    <!-- Ronda Grupal -->
+    <div id="tab-grupo" class="inner-panel">
+      <h3>Configurar Ronda Grupal</h3>
+      <p style="font-size:13px;color:var(--txt2);margin-bottom:20px">
+        Selecciona las <strong style="color:var(--accent)">7 pymes</strong> que participarán en la ronda inicial. Los jurados calificarán a cada una con un puntaje. Las <strong style="color:var(--accent)">4 con mayor puntuación</strong> avanzan a Cuartos de Final.
+      </p>
+      <div id="groupSlots"><!-- JS --></div>
+      <div id="groupAlert" style="display:none" class="alert"></div>
+      <div class="row" style="margin-top:20px">
+        <button class="btn btn-primary" onclick="saveGroupStage()">💾 Guardar y lanzar Ronda Grupal</button>
+      </div>
+    </div>
+
+    <!-- Bracket QF -->
+    <div id="tab-bracket" class="inner-panel">
+      <h3>Configurar Cuartos de Final</h3>
+      <p style="font-size:13px;color:var(--txt2);margin-bottom:8px">
+        Define manualmente los 2 enfrentamientos de QF (1°vs4° y 2°vs3°), o usa el botón para auto-llenar desde los resultados del grupo.
+      </p>
+      <button class="btn btn-ghost btn-sm" style="margin-bottom:20px" onclick="autoFillQFFromGroup()">⚡ Auto-llenar desde resultados del grupo</button>
+      <div id="qfBuilder"><!-- JS --></div>
+      <div id="bracketAlert" style="display:none" class="alert"></div>
+      <div class="row" style="margin-top:20px">
+        <button class="btn btn-primary" onclick="saveBracket()">💾 Guardar bracket QF y lanzar Fase QF</button>
+      </div>
+    </div>
+
+    <!-- Jurados -->
+    <div id="tab-jurados" class="inner-panel">
+      <div class="row" style="margin-bottom:16px">
+        <h3 style="margin:0">Jurados del torneo</h3>
+        <button class="btn btn-primary btn-sm" onclick="openAddJurorModal()">+ Agregar jurado</button>
+        <button class="btn btn-ghost btn-sm" onclick="loadAdminJurados()">↻ Refrescar</button>
+      </div>
+      <div id="adminJuradosList"><div class="loading-overlay"><span class="spinner"></span></div></div>
+    </div>
+
+    <!-- Control -->
+    <div id="tab-control" class="inner-panel">
+      <h3>Control de fases</h3>
+      <div class="row" style="flex-wrap:wrap;gap:10px;margin-bottom:20px">
+        <button class="btn btn-success" onclick="adminAction('adminLaunchPhaseQF')">▶ Lanzar QF</button>
+        <button class="btn btn-success" onclick="adminAction('adminLaunchPhaseFinal')">▶ Lanzar Final</button>
+        <button class="btn btn-ghost" onclick="setPhase(0)">Fase 0 (pre-torneo)</button>
+        <button class="btn btn-ghost" onclick="setPhase(1)">Fase 1 (Grupo)</button>
+        <button class="btn btn-ghost" onclick="setPhase(2)">Fase 2 (QF)</button>
+        <button class="btn btn-ghost" onclick="setPhase(3)">Fase 3 (Final)</button>
+      </div>
+      <div class="card" style="background:rgba(239,68,68,.05);border-color:rgba(239,68,68,.2)">
+        <h3 style="color:#f87171;margin-bottom:8px">⚠ Zona de peligro</h3>
+        <p style="font-size:13px;color:var(--txt2);margin-bottom:16px">Reinicia todos los partidos y votos. No elimina empresas.</p>
+        <button class="btn btn-danger" onclick="confirmReset()">🗑 Resetear bracket y votos</button>
       </div>
     </div>
   </div>
+</section>
+
+<!-- LOGIN -->
+<section id="sec-login" class="section">
+  <div style="max-width:380px;margin:0 auto">
+    <div class="card">
+      <h2 style="margin-bottom:4px;color:var(--accent)">Acceso</h2>
+      <p style="color:var(--txt2);font-size:13px;margin-bottom:20px">Ingresa tu token de jurado o administrador</p>
+      <div class="field">
+        <label>Token de acceso</label>
+        <input type="password" id="loginToken" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/>
+      </div>
+      <button class="btn btn-primary" style="margin-top:16px;width:100%" onclick="doLogin()">Ingresar</button>
+      <div id="loginAlert" style="display:none;margin-top:12px" class="alert"></div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<div id="toast"></div>
+
+<!-- MODAL: add team -->
+<div class="modal-overlay" id="addTeamModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('addTeamModal')">✕</button>
+    <h3>Agregar empresa manual</h3>
+    <div style="margin-bottom:16px">
+      <div class="logo-upload-area" onclick="document.getElementById('modalLogoFile').click()">
+        <input type="file" id="modalLogoFile" accept="image/*" style="display:none" onchange="handleModalLogoSelect(event)"/>
+        <div id="modalLogoPlaceholder">
+          <div class="logo-placeholder" style="width:56px;height:56px;font-size:22px">🏢</div>
+          <p style="font-size:12px;color:var(--txt2);margin-top:4px">Logo (opcional)</p>
+        </div>
+        <div id="modalLogoPreviewWrap" style="display:none">
+          <img id="modalLogoPreviewImg" class="logo-preview" style="width:56px;height:56px" alt=""/>
+          <p style="font-size:11px;color:var(--accent);margin-top:4px">✓ Logo cargado</p>
+        </div>
+      </div>
+    </div>
+    <div class="form-grid">
+      <div class="field"><label>Empresa *</label><input type="text" id="modal-empresa" placeholder="Nombre"/></div>
+      <div class="field"><label>Founder</label><input type="text" id="modal-founder" placeholder="Nombre"/></div>
+      <div class="field"><label>Correo</label><input type="email" id="modal-email" placeholder="correo@empresa.com"/></div>
+      <div class="field"><label>Teléfono</label><input type="tel" id="modal-tel" placeholder="+52 55"/></div>
+      <div class="field"><label>Redes</label><input type="text" id="modal-redes" placeholder="@empresa"/></div>
+      <div class="field"><label>Web</label><input type="url" id="modal-website" placeholder="https://"/></div>
+    </div>
+    <div id="modalAlert" style="display:none;margin-top:12px" class="alert"></div>
+    <button class="btn btn-primary" style="margin-top:16px;width:100%" id="modalSubmitBtn" onclick="submitManualTeam()">Agregar empresa</button>
+  </div>
 </div>
 
-<!-- JURADO PAGE -->
-<div id="pg-jury" class="pg">
-  <div class="jsec">
-    <div class="cont">
-      <div style="text-align:center;margin-bottom:32px">
-        <div style="font-family:var(--fl);font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--g);margin-bottom:8px">Solo para jurados acreditados</div>
-        <h2 style="font-family:var(--fd);font-size:clamp(24px,5vw,50px);color:var(--wh);letter-spacing:.02em">PANEL DE JURADO</h2>
+<!-- MODAL: add juror -->
+<div class="modal-overlay" id="addJurorModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('addJurorModal')">✕</button>
+    <h3>Agregar jurado</h3>
+    <div class="form-grid">
+      <div class="field"><label>Token / ID *</label><input type="text" id="juror-id" placeholder="ej: j01"/></div>
+      <div class="field"><label>Nombre *</label><input type="text" id="juror-name" placeholder="Nombre completo"/></div>
+    </div>
+    <div id="jurorAlert" style="display:none;margin-top:12px" class="alert"></div>
+    <button class="btn btn-primary" style="margin-top:16px;width:100%" onclick="submitAddJuror()">Agregar jurado</button>
+  </div>
+</div>
+
+<!-- MODAL: advance match -->
+<div class="modal-overlay" id="advanceModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('advanceModal')">✕</button>
+    <h3 id="advanceModalTitle">Avanzar partido</h3>
+    <p style="font-size:13px;color:var(--txt2);margin-bottom:20px">Selecciona el ganador para promover al siguiente round.</p>
+    <div id="advanceWinnerBtns" style="display:flex;flex-direction:column;gap:10px"></div>
+    <div id="advanceAlert" style="display:none;margin-top:12px" class="alert"></div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════
+   CONFIG
+══════════════════════════════════════════ */
+const CFG = {
+  BACKEND_URL: 'https://script.google.com/macros/s/AKfycbwBis9IoKHduEJtvKuo1WbYp9EgqqZ2m_fI5N2OzJiS4v3ZPazzZGSPn_K5WRRXx9Iy2g/exec',
+  REFRESH_INTERVAL: 8000,
+  EVENT_DATE: '27 Mayo 2026',
+  EVENT_VENUE: 'Cámara de Diputados · CDMX',
+  GROUP_SIZE: 7,
+  QUALIFIERS: 4,
+};
+
+/* ══════════════════════════════════════════
+   STATE
+══════════════════════════════════════════ */
+let STATE = { phase: '0', bracket: {}, group: {} };
+let SESSION = { token: null, role: null, name: null };
+let refreshTimer = null;
+let logoBase64 = null;
+let modalLogoBase64 = null;
+let cachedTeams = [];
+
+/* ══════════════════════════════════════════
+   API
+   POST cuando: hay logoBase64, acción es
+   adminSetBracket, o payload > 1500 chars
+══════════════════════════════════════════ */
+async function apiCall(params) {
+  const usePost = params.logoBase64
+    || params.action === 'adminSetBracket'
+    || JSON.stringify(params).length > 1500;
+
+  if (usePost) {
+    const body = { ...params, _: Date.now() };
+    const r = await fetch(CFG.BACKEND_URL, {
+      method: 'POST',
+      body: JSON.stringify(body),
+      headers: { 'Content-Type': 'text/plain' }
+    });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.json();
+  }
+  const p = new URLSearchParams({ ...params, _: Date.now() });
+  const r = await fetch(CFG.BACKEND_URL + '?' + p.toString(), { cache: 'no-store' });
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  return r.json();
+}
+
+/* ══════════════════════════════════════════
+   NAVIGATION
+══════════════════════════════════════════ */
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('sec-' + id).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => {
+    if (b.getAttribute('onclick')?.includes(`'${id}'`)) b.classList.add('active');
+  });
+  if (id === 'admin') { loadAdminEmpresas(); loadAdminJurados(); buildGroupSlots(); buildQFBuilder(); }
+  if (id === 'juror' && SESSION.role === 'juror') renderJurorView();
+}
+
+function showAdminTab(tab) {
+  document.querySelectorAll('.inner-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.inner-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  event.target.classList.add('active');
+  if (tab === 'empresas') loadAdminEmpresas();
+  if (tab === 'jurados') loadAdminJurados();
+  if (tab === 'grupo') buildGroupSlots();
+  if (tab === 'bracket') buildQFBuilder();
+}
+
+/* ══════════════════════════════════════════
+   PHASE BADGE
+══════════════════════════════════════════ */
+const PHASE_LABELS = {
+  '0': 'Pre-torneo',
+  '1': '📊 Ronda Grupal',
+  '2': '⚡ Cuartos de Final',
+  '3': '🏆 Gran Final',
+};
+function updatePhaseBadge(phase) {
+  const el = document.getElementById('phaseBadge');
+  el.textContent = PHASE_LABELS[phase] || 'Fase ' + phase;
+  el.className = 'hdr-badge' + (['1','2','3'].includes(phase) ? ' live' : '');
+}
+
+/* ══════════════════════════════════════════
+   CÓMO FUNCIONA SIN NUEVOS ENDPOINTS
+   ─────────────────────────────────────────
+   El grupo se guarda dentro del objeto bracket
+   usando la clave reservada "_group":
+     bracket._group = { companies: [...] }
+
+   Los puntajes del grupo usan el endpoint
+   submitScore existente con matchId = 'GRP_<teamId>'
+   scoreA = puntaje del jurado, scoreB = 0
+
+   getState devuelve bracket completo incluyendo
+   _group y las entradas GRP_* con sus scores.
+   ─────────────────────────────────────────
+   Phase 0 → Pre-torneo
+   Phase 1 → Ronda grupal (7 pymes)
+   Phase 2 → Cuartos de Final (QF1, QF2)
+   Phase 3 → Gran Final (FIN)
+══════════════════════════════════════════ */
+const BR = {
+  H: 110, QW: 230, FW: 250, CN: 70, GAP: 28, TOP: 40
+};
+
+function getBracketLayout() {
+  const { H, QW, FW, CN, GAP, TOP } = BR;
+  const qx = 0;
+  const fx = QW + CN;
+
+  const qf1y = TOP;
+  const qf2y = TOP + H + GAP * 2;
+
+  // Final centered between QF1 and QF2
+  const finy = (qf1y + qf2y + H) / 2 - H / 2;
+
+  // 3rd place below final
+  const tply = Math.max(qf2y + H, finy + H) + GAP * 3;
+
+  const totalW = fx + FW + 20;
+  const totalH = tply + H + 20;
+
+  return { qx, fx, QF1:{x:qx,y:qf1y}, QF2:{x:qx,y:qf2y},
+           FIN:{x:fx,y:finy}, TPL:{x:fx,y:tply}, totalW, totalH, labelY: TOP - 24 };
+}
+
+/* ══════════════════════════════════════════
+   RENDER BRACKET (phases 2–3)  ← sin cambios
+══════════════════════════════════════════ */
+function renderBracket(bracket, phase) {
+  const L = getBracketLayout();
+  const isAdmin = SESSION.role === 'admin';
+  const { H, QW, FW } = BR;
+
+  const svgLines = [];
+  function connector(fromX, fromY, toX, toY, color) {
+    const midX = (fromX + toX) / 2;
+    svgLines.push(`<path d="M${fromX},${fromY} C${midX},${fromY} ${midX},${toY} ${toX},${toY}"
+      fill="none" stroke="${color||'#2a2a2a'}" stroke-width="1.5" opacity=".7"/>`);
+  }
+
+  connector(L.QF1.x + QW, L.QF1.y + H/2, L.FIN.x, L.FIN.y + H/4, 'var(--accent)');
+  connector(L.QF2.x + QW, L.QF2.y + H/2, L.FIN.x, L.FIN.y + 3*H/4, 'var(--accent)');
+
+  let html = `
+  <div class="bracket-scroll">
+  <div class="bracket-wrap" style="width:${L.totalW}px;height:${L.totalH}px;position:relative">
+  <svg style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none">${svgLines.join('\n')}</svg>`;
+
+  // Column labels
+  [{x:L.qx,w:QW,t:'Cuartos de Final'},{x:L.fx,w:FW,t:'Gran Final'}].forEach(({x,w,t}) => {
+    html += `<div class="bracket-col-label" style="left:${x}px;width:${w}px;top:${L.labelY}px">${t}</div>`;
+  });
+
+  html += `<div class="trophy-icon" style="left:${L.FIN.x+FW/2-24}px;top:${L.FIN.y-56}px;width:48px">🏆</div>`;
+  html += `<div class="bronze-badge" style="left:${L.TPL.x}px;top:${L.TPL.y-18}px;width:${FW}px;text-align:center">🥉 3er Lugar</div>`;
+
+  const matchDefs = [
+    {id:'QF1', pos:L.QF1, w:QW, label:'QF · 1° vs 4°'},
+    {id:'QF2', pos:L.QF2, w:QW, label:'QF · 2° vs 3°'},
+    {id:'FIN', pos:L.FIN, w:FW, label:'GRAN FINAL', gold:true},
+    {id:'TPL', pos:L.TPL, w:FW, label:'3er Lugar'},
+  ];
+
+  matchDefs.forEach(({id, pos, w, label, gold}) => {
+    const m = bracket[id] || {};
+    const locked = m.locked;
+    const winner = m.winner;
+    const teamA = m.teamAName || m.teamA || '';
+    const teamB = m.teamBName || m.teamB || '';
+    const logoA = m.teamALogoUrl || '';
+    const logoB = m.teamBLogoUrl || '';
+    const scoreA = m.scoreA !== undefined && m.scoreA !== '' ? m.scoreA : '';
+    const scoreB = m.scoreB !== undefined && m.scoreB !== '' ? m.scoreB : '';
+    const canAdvance = isAdmin && teamA && teamB && !locked;
+
+    html += `
+    <div class="match-card${locked?' locked':''}${gold?' match-phase-gold':''}"
+         style="left:${pos.x}px;top:${pos.y}px;width:${w}px">
+      <div class="match-header">
+        <span>${label}</span>
+        <span style="display:flex;align-items:center;gap:6px">
+          ${locked ? '<span style="color:var(--accent)">✓</span>' : ''}
+          ${canAdvance ? `<button onclick="openAdvanceModal('${id}')" style="font-size:9px;padding:2px 7px;background:var(--accent);color:#000;border:none;border-radius:3px;cursor:pointer;font-weight:700">Avanzar</button>` : ''}
+        </span>
       </div>
-      <div class="jgrid">
-        <!-- Login -->
-        <div class="pbox">
-          <div class="ptit">IDENTIFICACIÓN</div>
-          <div class="field"><label>Token de jurado</label><input class="fi" type="password" id="jtok" placeholder="••••••••" autocomplete="off"/></div>
-          <button class="btn bp" style="width:100%;justify-content:center" onclick="handleJurorVerify()">Verificar acceso</button>
-          <div class="msg" id="jmsg"></div>
-          <div class="jwel" id="jwel" style="display:none">
-            <div style="font-family:var(--fl);font-size:11px;color:var(--steel);margin-bottom:4px;letter-spacing:.08em;text-transform:uppercase">Jurado activo</div>
-            <div class="jname" id="jname"></div>
-            <div style="font-family:var(--fl);font-size:12px;color:var(--steel);margin-top:6px" id="jury-phase-hint">
-              Fase 1: Evalúa las empresas con los criterios de abajo
+      ${teamRow(m.teamA||'', teamA, logoA, winner, scoreA)}
+      ${teamRow(m.teamB||'', teamB, logoB, winner, scoreB)}
+    </div>`;
+  });
+
+  html += `</div></div>`;
+  document.getElementById('bracketContainer').innerHTML = html;
+}
+
+function teamRow(tid, name, logo, winner, score) {
+  const isWinner = winner && (winner === tid || winner === name);
+  const isLoser  = winner && !isWinner;
+  let logoHtml = '';
+  if (logo) logoHtml = `<img class="logo-sm" src="${logo}" alt="" onerror="this.style.display='none'"/>`;
+  else if (name) logoHtml = `<div class="logo-sm-init">${name.charAt(0).toUpperCase()}</div>`;
+  else logoHtml = `<div class="logo-sm-init" style="color:var(--border)">?</div>`;
+
+  const nameHtml = name
+    ? `<span class="team-name">${name}</span>`
+    : `<span class="team-name team-empty">Por definir</span>`;
+  const scoreHtml = score !== '' ? `<span class="team-score">${score}</span>` : '';
+  const cls = 'team-row' + (isWinner?' winner':'') + (isLoser?' loser':'');
+  return `<div class="${cls}">${logoHtml}${nameHtml}${scoreHtml}</div>`;
+}
+
+/* ══════════════════════════════════════════
+   RENDER GROUP STAGE (phase 1)
+   Lee companies de bracket._group
+   Lee scores de bracket['GRP_teamId'].scoreA
+══════════════════════════════════════════ */
+function renderGroupStage(bracket) {
+  const isAdmin = SESSION.role === 'admin';
+  const groupData = bracket._group || {};
+  const companies = groupData.companies || [];
+
+  // Leer score promedio desde entradas GRP_* del bracket
+  const scored = companies.map(c => {
+    const entry = bracket['GRP_' + c.teamId];
+    const score = (entry && entry.scoreA !== undefined && entry.scoreA !== '')
+      ? parseFloat(entry.scoreA) : null;
+    return { ...c, score };
+  }).sort((a, b) => {
+    if (a.score === null && b.score === null) return 0;
+    if (a.score === null) return 1;
+    if (b.score === null) return -1;
+    return b.score - a.score;
+  });
+
+  const qualifiedIds = scored.filter(c => c.score !== null)
+    .slice(0, CFG.QUALIFIERS).map(c => c.teamId);
+
+  let html = `
+  <div style="max-width:720px">
+    <div class="row" style="margin-bottom:16px;gap:12px;align-items:center;flex-wrap:wrap">
+      <h3 style="margin:0;color:var(--accent)">📊 Ronda Grupal — ${companies.length} PYMES</h3>
+      <span class="tag tag-gray">Top ${CFG.QUALIFIERS} avanzan a QF</span>
+      ${isAdmin ? `<button class="btn btn-ghost btn-sm" onclick="showSection('admin');setTimeout(()=>{showAdminTab('bracket')},300)">→ Config. QF</button>` : ''}
+    </div>
+    <table class="group-table">
+      <thead>
+        <tr>
+          <th class="center" style="width:44px">#</th>
+          <th>Empresa</th>
+          <th class="center">Puntaje promedio</th>
+          <th class="center">Estado</th>
+        </tr>
+      </thead>
+      <tbody>`;
+
+  scored.forEach((c, i) => {
+    const rank = i + 1;
+    const isQual = qualifiedIds.includes(c.teamId);
+    const score = c.score;
+    const hasScore = score !== null;
+    const logoHtml = c.logoUrl
+      ? `<img src="${c.logoUrl}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;border:1px solid var(--border2);margin-right:10px;flex-shrink:0" onerror="this.style.display='none'">`
+      : `<div style="width:28px;height:28px;border-radius:50%;background:var(--g20);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:var(--g);margin-right:10px;flex-shrink:0;border:1px solid var(--border2)">${(c.empresa||'?').charAt(0)}</div>`;
+
+    html += `
+    <tr class="${isQual ? 'qualified' : ''}">
+      <td class="center"><div class="rank-badge">${rank}</div></td>
+      <td><div style="display:flex;align-items:center">${logoHtml}<div>
+        <div style="font-weight:600;font-size:13px">${esc(c.empresa)}</div>
+        <div style="font-size:11px;color:var(--txt2)">${esc(c.founder||'')}</div>
+      </div></div></td>
+      <td class="center">${hasScore ? `<span class="score-big">${parseFloat(score).toFixed(2)}</span>` : '<span class="score-null">—</span>'}</td>
+      <td class="center">${isQual
+        ? '<span class="tag tag-green">✓ Clasifica</span>'
+        : '<span class="tag tag-gray">Eliminada</span>'
+      }</td>
+    </tr>`;
+  });
+
+  html += `</tbody></table></div>`;
+  document.getElementById('bracketContainer').innerHTML = html;
+}
+
+/* ══════════════════════════════════════════
+   PHASE 0 BANNER
+══════════════════════════════════════════ */
+function renderPhase0() {
+  document.getElementById('bracketContainer').innerHTML = `
+  <div class="phase-banner">
+    <div class="phase-icon">🚀</div>
+    <h2>Innovation Cup 2026</h2>
+    <p>El torneo aún no ha comenzado. El bracket se publicará próximamente.</p>
+    <p style="color:var(--g);font-size:12px;margin-top:8px;letter-spacing:.04em">${CFG.EVENT_DATE} · ${CFG.EVENT_VENUE}</p>
+    <button class="btn btn-primary" style="margin-top:24px" onclick="showSection('register')">
+      📝 Registrar mi empresa
+    </button>
+  </div>`;
+}
+
+/* ══════════════════════════════════════════
+   REFRESH LOOP
+══════════════════════════════════════════ */
+async function refresh() {
+  try {
+    const data = await apiCall({ action: 'getState' });
+    if (!data.ok) return;
+    STATE = data;
+    updatePhaseBadge(data.phase);
+    if (document.getElementById('sec-bracket').classList.contains('active')) {
+      const p = data.phase;
+      const bracket = data.bracket || {};
+      if (p === '0') renderPhase0();
+      else if (p === '1') renderGroupStage(bracket);
+      else renderBracket(bracket, p);
+    }
+  } catch(e) { console.warn('Refresh error:', e); }
+}
+
+/* ══════════════════════════════════════════
+   REGISTRATION
+══════════════════════════════════════════ */
+function handleLogoSelect(evt) {
+  const file = evt.target.files[0]; if (!file) return;
+  resizeImg(file, 200).then(b64 => {
+    logoBase64 = b64;
+    document.getElementById('logoPreviewImg').src = b64;
+    document.getElementById('logoPlaceholder').style.display = 'none';
+    document.getElementById('logoPreviewWrap').style.display = 'block';
+  });
+}
+function handleModalLogoSelect(evt) {
+  const file = evt.target.files[0]; if (!file) return;
+  resizeImg(file, 200).then(b64 => {
+    modalLogoBase64 = b64;
+    document.getElementById('modalLogoPreviewImg').src = b64;
+    document.getElementById('modalLogoPlaceholder').style.display = 'none';
+    document.getElementById('modalLogoPreviewWrap').style.display = 'block';
+  });
+}
+function resizeImg(file, maxSize) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        let {width:w, height:h} = img;
+        if (w > maxSize || h > maxSize) {
+          if (w >= h) { h = Math.round(h*maxSize/w); w = maxSize; }
+          else { w = Math.round(w*maxSize/h); h = maxSize; }
+        }
+        const c = document.createElement('canvas'); c.width=w; c.height=h;
+        c.getContext('2d').drawImage(img,0,0,w,h);
+        resolve(c.toDataURL('image/jpeg',.75));
+      };
+      img.onerror = reject; img.src = e.target.result;
+    };
+    reader.onerror = reject; reader.readAsDataURL(file);
+  });
+}
+
+async function submitRegistration() {
+  const btn = document.getElementById('regSubmitBtn');
+  const al = document.getElementById('regAlert');
+  const empresa = document.getElementById('reg-empresa').value.trim();
+  const founder = document.getElementById('reg-founder').value.trim();
+  const email   = document.getElementById('reg-email').value.trim();
+  if (!empresa || !founder || !email) { showAlert(al,'Completa los campos requeridos.','error'); return; }
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Registrando…'; hideAlert(al);
+  try {
+    const params = { action:'registerTeam', empresa, founder, email,
+      tel:document.getElementById('reg-tel').value.trim(),
+      redes:document.getElementById('reg-redes').value.trim(),
+      website:document.getElementById('reg-website').value.trim() };
+    if (logoBase64) params.logoBase64 = logoBase64;
+    const res = await apiCall(params);
+    if (res.ok) {
+      showAlert(al,'✓ ¡Empresa registrada! Pronto nos pondremos en contacto.','success');
+      btn.textContent = '✓ Registrado';
+      ['reg-empresa','reg-founder','reg-email','reg-tel','reg-redes','reg-website'].forEach(id=>document.getElementById(id).value='');
+      logoBase64=null;
+      document.getElementById('logoPlaceholder').style.display='block';
+      document.getElementById('logoPreviewWrap').style.display='none';
+      document.getElementById('logoFile').value='';
+      setTimeout(()=>{ btn.disabled=false; btn.textContent='Registrar empresa'; },3000);
+    } else { showAlert(al, res.error||'Error al registrar','error'); btn.disabled=false; btn.textContent='Registrar empresa'; }
+  } catch(e) { showAlert(al,'Error de conexión: '+e.message,'error'); btn.disabled=false; btn.textContent='Registrar empresa'; }
+}
+
+/* ══════════════════════════════════════════
+   LOGIN
+══════════════════════════════════════════ */
+async function doLogin() {
+  const token = document.getElementById('loginToken').value.trim();
+  const al = document.getElementById('loginAlert');
+  if (!token) return; hideAlert(al);
+  try {
+    const res = await apiCall({ action:'adminGetTeams', token });
+    if (res.ok) {
+      SESSION = { token, role:'admin', name:'Admin' };
+      document.getElementById('adminNavBtn').style.display='';
+      document.getElementById('jurorNavBtn').style.display='none';
+      document.getElementById('adminWelcome').textContent='Admin';
+      toast('Bienvenido, Admin 🛡', true); showSection('admin'); return;
+    }
+  } catch(e) {}
+  try {
+    const res = await apiCall({ action:'verifyJuror', token });
+    if (res.ok) {
+      SESSION = { token, role:'juror', name:res.name };
+      document.getElementById('jurorNavBtn').style.display='';
+      document.getElementById('adminNavBtn').style.display='none';
+      toast('Bienvenido, ' + res.name + ' ⚖️', true);
+      showSection('juror'); return;
+    }
+  } catch(e) {}
+  showAlert(al,'Token inválido. Verifica tu acceso.','error');
+}
+
+/* ══════════════════════════════════════════
+   ADMIN — EMPRESAS
+══════════════════════════════════════════ */
+async function loadAdminEmpresas() {
+  const el = document.getElementById('adminEmpresasList');
+  el.innerHTML = '<div class="loading-overlay"><span class="spinner"></span></div>';
+  try {
+    const res = await apiCall({ action:'adminGetRegistrations', token:SESSION.token });
+    if (!res.ok) { el.innerHTML=`<div class="alert alert-error">${res.error}</div>`; return; }
+    cachedTeams = res.registrations || [];
+    if (!cachedTeams.length) { el.innerHTML='<div class="alert alert-info">No hay empresas registradas aún.</div>'; return; }
+    el.innerHTML = cachedTeams.map(t => empresaCard(t)).join('');
+  } catch(e) { el.innerHTML=`<div class="alert alert-error">Error: ${e.message}</div>`; }
+}
+
+function empresaCard(t) {
+  const logoHtml = t.logoUrl
+    ? `<img class="empresa-logo" src="${t.logoUrl}" alt="" onerror="this.style.display='none'">`
+    : `<div class="empresa-logo-init">${(t.empresa||'?').charAt(0).toUpperCase()}</div>`;
+  return `
+  <div class="empresa-card">
+    ${logoHtml}
+    <div class="empresa-info">
+      <div class="empresa-name">${esc(t.empresa)}</div>
+      <div class="empresa-meta">${esc([t.founder,t.email,t.tel].filter(Boolean).join(' · '))}</div>
+      ${t.notes==='manual'?'<span class="tag tag-gray" style="margin-top:4px">manual</span>':''}
+    </div>
+    <div class="empresa-actions">
+      <button class="btn btn-danger btn-sm" onclick="deleteTeam('${t.teamId}')">🗑</button>
+    </div>
+  </div>`;
+}
+
+async function deleteTeam(teamId) {
+  if (!confirm('¿Eliminar esta empresa del torneo?')) return;
+  try {
+    const res = await apiCall({ action:'adminDeleteTeam', token:SESSION.token, teamId });
+    if (res.ok) { toast('Empresa eliminada',true); loadAdminEmpresas(); }
+    else toast(res.error,false);
+  } catch(e) { toast(e.message,false); }
+}
+
+function openAddTeamModal() {
+  modalLogoBase64=null;
+  ['modal-empresa','modal-founder','modal-email','modal-tel','modal-redes','modal-website'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('modalLogoPlaceholder').style.display='block';
+  document.getElementById('modalLogoPreviewWrap').style.display='none';
+  document.getElementById('modalLogoFile').value='';
+  hideAlert(document.getElementById('modalAlert'));
+  openModal('addTeamModal');
+}
+
+async function submitManualTeam() {
+  const al=document.getElementById('modalAlert'), btn=document.getElementById('modalSubmitBtn');
+  const empresa=document.getElementById('modal-empresa').value.trim();
+  if (!empresa) { showAlert(al,'Nombre de empresa requerido','error'); return; }
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span> Agregando…';
+  const params = { action:'adminManualAddTeam', token:SESSION.token, empresa,
+    founder:document.getElementById('modal-founder').value.trim(),
+    email:document.getElementById('modal-email').value.trim(),
+    tel:document.getElementById('modal-tel').value.trim(),
+    redes:document.getElementById('modal-redes').value.trim(),
+    website:document.getElementById('modal-website').value.trim() };
+  if (modalLogoBase64) params.logoBase64 = modalLogoBase64;
+  try {
+    const res = await apiCall(params);
+    if (res.ok) { toast('Empresa agregada ✓',true); closeModal('addTeamModal'); loadAdminEmpresas(); }
+    else showAlert(al, res.error||'Error','error');
+  } catch(e) { showAlert(al,e.message,'error'); }
+  finally { btn.disabled=false; btn.textContent='Agregar empresa'; }
+}
+
+/* ══════════════════════════════════════════
+   ADMIN — GROUP STAGE BUILDER
+   Guarda en bracket._group via adminSetBracket
+   Luego llama adminSetPhase('1')
+══════════════════════════════════════════ */
+function buildGroupSlots() {
+  const container = document.getElementById('groupSlots');
+  const opts = `<option value="">— Seleccionar empresa —</option>` +
+    cachedTeams.map(t=>`<option value="${t.teamId}">${esc(t.empresa)}</option>`).join('');
+
+  container.innerHTML = Array.from({length:CFG.GROUP_SIZE},(_,i)=>`
+    <div class="group-slot">
+      <div class="slot-num">${i+1}</div>
+      <div class="slot-selects">
+        <select id="gs-${i}">${opts}</select>
+        <input type="text" id="gs-${i}-manual" placeholder="O escribe nombre manual si no aparece en la lista…"/>
+      </div>
+    </div>`).join('');
+
+  // Pre-fill desde bracket._group
+  const companies = ((STATE.bracket || {})._group || {}).companies || [];
+  companies.forEach((c,i) => {
+    if (i >= CFG.GROUP_SIZE) return;
+    const sel = document.getElementById(`gs-${i}`);
+    const man = document.getElementById(`gs-${i}-manual`);
+    if (!sel || !man) return;
+    const opt = sel.querySelector(`option[value="${c.teamId}"]`);
+    if (opt) { sel.value = c.teamId; }
+    else { man.value = c.empresa || c.teamId; }
+  });
+}
+
+async function saveGroupStage() {
+  const al = document.getElementById('groupAlert'); hideAlert(al);
+  const companies = [];
+  for (let i=0; i<CFG.GROUP_SIZE; i++) {
+    const sel  = document.getElementById(`gs-${i}`).value;
+    const man  = document.getElementById(`gs-${i}-manual`).value.trim();
+    if (sel) {
+      // Solo guardar lo mínimo (sin logoUrl para reducir tamaño del JSON)
+      const team = cachedTeams.find(t => t.teamId === sel);
+      if (team) companies.push({ teamId: team.teamId, empresa: team.empresa, founder: team.founder || '' });
+    } else if (man) {
+      companies.push({ teamId: 'MAN_' + i, empresa: man, founder: '' });
+    }
+  }
+  if (companies.length < CFG.GROUP_SIZE) {
+    showAlert(al, `Completa las ${CFG.GROUP_SIZE} pymes del grupo. Llevas ${companies.length}.`, 'error');
+    return;
+  }
+
+  // Construir bracket incluyendo _group (preservar QF/FIN si ya existen)
+  const currentBracket = STATE.bracket || {};
+  const newBracket = { ...currentBracket, _group: { companies } };
+
+  try {
+    // 1) Guardar bracket con datos del grupo
+    const r1 = await apiCall({
+      action: 'adminSetBracket',
+      token: SESSION.token,
+      bracket: JSON.stringify(newBracket)
+    });
+    if (!r1.ok) { showAlert(al, r1.error || 'Error al guardar bracket', 'error'); return; }
+
+    // 2) Activar Fase 1 (pública)
+    const r2 = await apiCall({ action: 'adminSetPhase', token: SESSION.token, phase: '1' });
+    if (!r2.ok) { showAlert(al, r2.error || 'Error al activar fase', 'error'); return; }
+
+    toast('✓ Ronda Grupal guardada y publicada — Fase 1 activa', true);
+    refresh();
+  } catch(e) { showAlert(al, 'Error de conexión: ' + e.message, 'error'); }
+}
+
+/* ══════════════════════════════════════════
+   ADMIN — QF BRACKET BUILDER
+══════════════════════════════════════════ */
+function buildQFBuilder() {
+  const container = document.getElementById('qfBuilder');
+  const opts = `<option value="">— Seleccionar empresa —</option>` +
+    cachedTeams.map(t=>`<option value="${t.teamId}">${esc(t.empresa)}</option>`).join('');
+
+  const rows = ['QF1','QF2'].map((qf,i) => {
+    const labels = ['1° vs 4°', '2° vs 3°'][i];
+    return `
+    <div style="background:var(--g10);border:1px solid var(--border);border-radius:var(--r2);padding:16px;display:grid;grid-template-columns:100px 1fr 40px 1fr;align-items:center;gap:12px;margin-bottom:10px">
+      <div style="font-family:var(--fd);font-size:14px;font-weight:700;color:var(--accent);text-align:center">
+        ${qf}<br><small style="color:var(--g);font-weight:400;font-size:10px">${labels}</small>
+      </div>
+      <div class="field" style="gap:4px">
+        <label style="font-size:10px">Equipo A</label>
+        <select id="qf-${qf}-A">${opts}</select>
+        <input type="text" id="qf-${qf}-A-manual" placeholder="O escribe nombre manual…" style="background:var(--g20);border:1px solid var(--border);border-radius:4px;padding:6px 10px;font-size:12px;color:var(--txt);outline:none"/>
+      </div>
+      <div style="font-size:12px;font-weight:700;color:var(--g);text-align:center">VS</div>
+      <div class="field" style="gap:4px">
+        <label style="font-size:10px">Equipo B</label>
+        <select id="qf-${qf}-B">${opts}</select>
+        <input type="text" id="qf-${qf}-B-manual" placeholder="O escribe nombre manual…" style="background:var(--g20);border:1px solid var(--border);border-radius:4px;padding:6px 10px;font-size:12px;color:var(--txt);outline:none"/>
+      </div>
+    </div>`;
+  }).join('');
+
+  container.innerHTML = rows;
+
+  // Pre-fill
+  const b = STATE.bracket || {};
+  ['QF1','QF2'].forEach(qf => {
+    const m = b[qf]; if (!m) return;
+    const selA=document.getElementById(`qf-${qf}-A`);
+    const selB=document.getElementById(`qf-${qf}-B`);
+    if (m.teamA) { const o=selA.querySelector(`option[value="${m.teamA}"]`); if(o) selA.value=m.teamA; else document.getElementById(`qf-${qf}-A-manual`).value=m.teamAName||m.teamA; }
+    if (m.teamB) { const o=selB.querySelector(`option[value="${m.teamB}"]`); if(o) selB.value=m.teamB; else document.getElementById(`qf-${qf}-B-manual`).value=m.teamBName||m.teamB; }
+  });
+}
+
+async function autoFillQFFromGroup() {
+  const bracket = STATE.bracket || {};
+  const group = (bracket._group || {});
+  const companies = group.companies || [];
+  if (companies.length < 4) { toast('Configura primero el grupo con las 7 pymes', false); return; }
+  // Leer scores de bracket['GRP_teamId'].scoreA
+  const sorted = [...companies].sort((a,b) => {
+    const sa = parseFloat((bracket['GRP_'+a.teamId]||{}).scoreA||0);
+    const sb = parseFloat((bracket['GRP_'+b.teamId]||{}).scoreA||0);
+    return sb - sa;
+  });
+  const top4 = sorted.slice(0,4);
+
+  // 1v4 in QF1, 2v3 in QF2
+  const fill = (qf, a, b) => {
+    const selA=document.getElementById(`qf-${qf}-A`);
+    const selB=document.getElementById(`qf-${qf}-B`);
+    const mA=document.getElementById(`qf-${qf}-A-manual`);
+    const mB=document.getElementById(`qf-${qf}-B-manual`);
+    const optA=selA.querySelector(`option[value="${a.teamId}"]`);
+    const optB=selB.querySelector(`option[value="${b.teamId}"]`);
+    if(optA) selA.value=a.teamId; else mA.value=a.empresa;
+    if(optB) selB.value=b.teamId; else mB.value=b.empresa;
+  };
+  fill('QF1', top4[0], top4[3]);
+  fill('QF2', top4[1], top4[2]);
+  toast('QF auto-llenado con resultados del grupo ✓', true);
+}
+
+async function saveBracket() {
+  const al=document.getElementById('bracketAlert'); hideAlert(al);
+  const bracket={};
+  let valid=true;
+  ['QF1','QF2'].forEach(qf=>{
+    const selA=document.getElementById(`qf-${qf}-A`).value;
+    const selB=document.getElementById(`qf-${qf}-B`).value;
+    const manA=document.getElementById(`qf-${qf}-A-manual`).value.trim();
+    const manB=document.getElementById(`qf-${qf}-B-manual`).value.trim();
+    const teamA=selA||(manA?'MANUAL:'+manA:'');
+    const teamB=selB||(manB?'MANUAL:'+manB:'');
+    if (!teamA||!teamB) valid=false;
+    bracket[qf]={teamA,teamB};
+  });
+  if (!valid) { showAlert(al,'Completa los 2 enfrentamientos de QF.','error'); return; }
+  try {
+    const res=await apiCall({ action:'adminSetBracket', token:SESSION.token, bracket:JSON.stringify(bracket) });
+    if (res.ok) { toast('Bracket QF guardado ✓',true); refresh(); }
+    else showAlert(al,res.error||'Error','error');
+  } catch(e) { showAlert(al,e.message,'error'); }
+}
+
+/* ══════════════════════════════════════════
+   ADMIN — ADVANCE MATCH
+══════════════════════════════════════════ */
+function openAdvanceModal(matchId) {
+  const m=STATE.bracket[matchId]||{};
+  const teamA=m.teamAName||m.teamA||'Equipo A';
+  const teamB=m.teamBName||m.teamB||'Equipo B';
+  const logoA=m.teamALogoUrl||''; const logoB=m.teamBLogoUrl||'';
+  document.getElementById('advanceModalTitle').textContent=`Avanzar: ${matchId}`;
+  document.getElementById('advanceAlert').style.display='none';
+  const mkBtn=(tid,name,logo)=>{
+    const lh=logo?`<img src="${logo}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;margin-right:8px" onerror="this.style.display='none'">`:`<div style="width:30px;height:30px;border-radius:50%;background:var(--g20);display:flex;align-items:center;justify-content:center;margin-right:8px;font-weight:700">${name.charAt(0)}</div>`;
+    return `<button class="btn btn-ghost" style="justify-content:flex-start;padding:12px 16px" onclick="doAdvanceMatch('${matchId}','${tid}')">${lh}<span>${esc(name)}</span></button>`;
+  };
+  document.getElementById('advanceWinnerBtns').innerHTML=mkBtn(m.teamA||teamA,teamA,logoA)+mkBtn(m.teamB||teamB,teamB,logoB);
+  openModal('advanceModal');
+}
+
+async function doAdvanceMatch(matchId,winner) {
+  const al=document.getElementById('advanceAlert');
+  try {
+    const res=await apiCall({ action:'adminAdvanceMatch', token:SESSION.token, matchId, winner });
+    if (res.ok) { toast('Ganador registrado ✓',true); closeModal('advanceModal'); refresh(); }
+    else showAlert(al,res.error||'Error','error');
+  } catch(e) { showAlert(al,e.message,'error'); }
+}
+
+/* ══════════════════════════════════════════
+   ADMIN — JURADOS
+══════════════════════════════════════════ */
+async function loadAdminJurados() {
+  const el=document.getElementById('adminJuradosList');
+  el.innerHTML='<div class="loading-overlay"><span class="spinner"></span></div>';
+  try {
+    const res=await apiCall({ action:'adminGetJurors', token:SESSION.token });
+    if (!res.ok) { el.innerHTML=`<div class="alert alert-error">${res.error}</div>`; return; }
+    const list=res.jurors||[];
+    if (!list.length) { el.innerHTML='<div class="alert alert-info">No hay jurados.</div>'; return; }
+    el.innerHTML=`<table class="info-table"><thead><tr><th>Token</th><th>Nombre</th><th>Estado</th><th></th></tr></thead><tbody>`+
+      list.map(j=>`<tr>
+        <td><code style="background:var(--g10);padding:2px 7px;border-radius:4px;font-size:11px">${esc(j.jurorId)}</code></td>
+        <td>${esc(j.name)}</td>
+        <td><span class="tag ${j.active?'tag-green':'tag-gray'}">${j.active?'Activo':'Inactivo'}</span></td>
+        <td><button class="btn btn-danger btn-sm" onclick="deleteJuror('${j.jurorId}')">Eliminar</button></td>
+      </tr>`).join('')+`</tbody></table>`;
+  } catch(e) { el.innerHTML=`<div class="alert alert-error">Error: ${e.message}</div>`; }
+}
+
+function openAddJurorModal() {
+  document.getElementById('juror-id').value='';
+  document.getElementById('juror-name').value='';
+  hideAlert(document.getElementById('jurorAlert'));
+  openModal('addJurorModal');
+}
+
+async function submitAddJuror() {
+  const al=document.getElementById('jurorAlert');
+  const jurorId=document.getElementById('juror-id').value.trim();
+  const name=document.getElementById('juror-name').value.trim();
+  if (!jurorId||!name) { showAlert(al,'Token y nombre requeridos','error'); return; }
+  try {
+    const res=await apiCall({ action:'adminAddJuror', token:SESSION.token, jurorId, name });
+    if (res.ok) { toast('Jurado agregado ✓',true); closeModal('addJurorModal'); loadAdminJurados(); }
+    else showAlert(al,res.error||'Error','error');
+  } catch(e) { showAlert(al,e.message,'error'); }
+}
+
+async function deleteJuror(jurorId) {
+  if (!confirm('¿Desactivar este jurado?')) return;
+  try {
+    const res=await apiCall({ action:'adminDeleteJuror', token:SESSION.token, jurorId });
+    if (res.ok) { toast('Jurado desactivado',true); loadAdminJurados(); }
+    else toast(res.error,false);
+  } catch(e) { toast(e.message,false); }
+}
+
+/* ══════════════════════════════════════════
+   ADMIN — CONTROL
+══════════════════════════════════════════ */
+async function adminAction(action) {
+  try {
+    const res=await apiCall({ action, token:SESSION.token });
+    if (res.ok) { toast('✓ Hecho',true); refresh(); }
+    else toast(res.error,false);
+  } catch(e) { toast(e.message,false); }
+}
+
+async function setPhase(n) {
+  try {
+    const res=await apiCall({ action:'adminSetPhase', token:SESSION.token, phase:String(n) });
+    if (res.ok) { toast('Fase '+n+' activa',true); refresh(); }
+    else toast(res.error,false);
+  } catch(e) { toast(e.message,false); }
+}
+
+async function confirmReset() {
+  if (!confirm('¿Resetear TODOS los partidos y votos?')) return;
+  if (!confirm('¿Seguro? No se puede deshacer.')) return;
+  try {
+    const res=await apiCall({ action:'adminResetAll', token:SESSION.token });
+    if (res.ok) { toast('Reset completo ✓',true); refresh(); }
+    else toast(res.error,false);
+  } catch(e) { toast(e.message,false); }
+}
+
+/* ══════════════════════════════════════════
+   JUROR VIEW — GROUP STAGE + QF/FINAL
+   Grupo: submitScore con matchId='GRP_teamId'
+   scoreA = puntaje (0-10), scoreB = 0
+══════════════════════════════════════════ */
+async function renderJurorView() {
+  const el = document.getElementById('jurorContent');
+  el.innerHTML = '<div class="loading-overlay"><span class="spinner"></span> Cargando…</div>';
+  try {
+    const [stateRes, scoresRes] = await Promise.all([
+      apiCall({ action: 'getState' }),
+      apiCall({ action: 'getMyScores', token: SESSION.token })
+    ]);
+    if (!stateRes.ok) { el.innerHTML = `<div class="alert alert-error">${stateRes.error}</div>`; return; }
+    const phase = stateRes.phase;
+    const bracket = stateRes.bracket || {};
+    // myScores: { matchId: { scoreA, scoreB } }
+    const myScores = scoresRes.ok ? (scoresRes.scores || {}) : {};
+
+    if (phase === '1') {
+      const companies = (bracket._group || {}).companies || [];
+      if (!companies.length) {
+        el.innerHTML = '<div class="phase-banner"><div class="phase-icon">⏳</div><h2>Sin empresas</h2><p>El administrador aún no ha configurado el grupo.</p></div>'; return;
+      }
+      el.innerHTML = `
+        <div style="max-width:600px">
+          <div class="row" style="margin-bottom:16px;gap:10px">
+            <h3 style="margin:0;color:var(--accent)">📊 Ronda Grupal · ${esc(SESSION.name)}</h3>
+            <span class="tag tag-gray">${companies.length} empresas</span>
+          </div>
+          <p style="font-size:13px;color:var(--txt2);margin-bottom:20px">
+            Asigna un puntaje del <strong style="color:var(--accent)">0 al 10</strong> a cada empresa.<br>
+            Las ${CFG.QUALIFIERS} con mayor puntuación acumulada avanzan a Cuartos de Final.
+          </p>
+        </div>` +
+        companies.map(c => {
+          const gid = 'GRP_' + c.teamId;
+          const saved = myScores[gid]; // { scoreA, scoreB }
+          const savedVal = saved ? saved.scoreA : '';
+          const logoHtml = c.logoUrl
+            ? `<img src="${c.logoUrl}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:1px solid var(--border2);flex-shrink:0">`
+            : `<div style="width:40px;height:40px;border-radius:50%;background:var(--g20);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;color:var(--g);flex-shrink:0">${(c.empresa||'?').charAt(0)}</div>`;
+          return `
+          <div class="vote-card" style="max-width:600px">
+            <div class="vote-card-title">
+              ${logoHtml}
+              <div style="flex:1;min-width:0">
+                <div style="font-size:14px;font-weight:700">${esc(c.empresa)}</div>
+                ${c.founder ? `<div style="font-size:11px;color:var(--txt2)">${esc(c.founder)}</div>` : ''}
+              </div>
+              ${savedVal !== '' ? `<span class="tag tag-green">✓ ${savedVal}/10</span>` : ''}
             </div>
-          </div>
-        </div>
-        <!-- Votación Fases 2-3 -->
-        <div class="pbox">
-          <div class="ptit">VOTACIÓN</div>
-          <div style="font-family:var(--fl);font-size:11px;color:var(--steel);margin-bottom:10px;letter-spacing:.1em;text-transform:uppercase">Matches disponibles</div>
-          <div class="oml" id="oml"><div class="nostyle"><span class="spin"></span> Cargando...</div></div>
-          <div id="vform" style="display:none">
-            <div style="font-family:var(--fl);font-size:11px;color:var(--steel);margin-bottom:8px;letter-spacing:.1em;text-transform:uppercase">Selecciona tu voto</div>
-            <div class="tvbs" id="tvbs"></div>
-            <div class="field"><label>Confianza</label>
-              <select class="fi" id="vconf">
-                <option value="Alta">Alta — Estoy convencido</option>
-                <option value="Media">Media — Ligera ventaja</option>
-                <option value="Baja">Baja — Muy parejos</option>
-              </select>
+            <div class="score-wrap">
+              <label>Puntaje</label>
+              <input type="number" id="gscore-${c.teamId}" min="0" max="10" step="0.5"
+                value="${savedVal}" placeholder="0–10"/>
+              <span style="font-size:12px;color:var(--txt2)">/ 10</span>
+              <button class="btn btn-primary btn-sm" onclick="submitOneGroupScore('${c.teamId}')">
+                ${savedVal !== '' ? '↻ Actualizar' : '✓ Enviar'}
+              </button>
             </div>
-            <div class="field"><label>Comentarios (opcional)</label><textarea class="fi" id="vcom" rows="3" placeholder="Justificación..."></textarea></div>
-            <button class="btn bp" style="width:100%;justify-content:center" onclick="handleVote()">✦ Emitir voto</button>
-            <div class="msg" id="vmsg"></div>
-          </div>
-        </div>
-      </div>
+          </div>`;
+        }).join('');
 
-      <!-- PANEL DE SCORING FASE 1 -->
-      <div id="scoring-panel-wrap" style="display:none;margin-top:28px">
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
-          <div style="font-family:var(--fd);font-size:28px;color:var(--wh);letter-spacing:.04em">EVALUAR EMPRESAS</div>
-          <div class="phase-badge phase-1">Fase 1</div>
-        </div>
-        <div style="font-family:var(--fl);font-size:13px;color:var(--steel);margin-bottom:24px;line-height:1.6">
-          Califica cada empresa del <strong style="color:var(--wh)">1 al 5</strong> en los 3 criterios.
-          Los puntajes se ponderan: Innovación 40% · Escalabilidad 35% · Impacto 25%.
-        </div>
-        <div class="scoring-wrap" id="scoring-panel">
-          <div class="nostyle"><span class="spin"></span> Cargando empresas...</div>
-        </div>
-      </div>
+    } else if (phase === '2' || phase === '3') {
+      const activeIds = phase === '2' ? ['QF1', 'QF2'] : ['FIN'];
+      const matches = activeIds.map(id => ({ id, ...bracket[id] })).filter(m => m.teamA && m.teamB);
+      if (!matches.length) {
+        el.innerHTML = '<div class="phase-banner"><div class="phase-icon">⏳</div><h2>En espera</h2><p>No hay partidos activos.</p></div>'; return;
+      }
+      el.innerHTML = `<h3 style="margin-bottom:16px">⚖️ Partidos activos · ${esc(SESSION.name)}</h3>` +
+        matches.map(m => jurorMatchCard(m, myScores[m.id])).join('');
+    } else {
+      el.innerHTML = '<div class="phase-banner"><div class="phase-icon">⏳</div><h2>En espera</h2><p>El torneo aún no ha comenzado.</p></div>';
+    }
+  } catch(e) { el.innerHTML = `<div class="alert alert-error">Error: ${e.message}</div>`; }
+}
+
+// Enviar puntaje de una empresa del grupo individualmente
+async function submitOneGroupScore(teamId) {
+  const input = document.getElementById(`gscore-${teamId}`);
+  const val = parseFloat(input.value);
+  if (isNaN(val) || val < 0 || val > 10) { toast('Puntaje inválido (0-10)', false); return; }
+  try {
+    const res = await apiCall({
+      action: 'submitScore',
+      token: SESSION.token,
+      matchId: 'GRP_' + teamId,
+      scoreA: String(val),
+      scoreB: '0'
+    });
+    if (res.ok) { toast('Puntaje enviado ✓', true); renderJurorView(); }
+    else toast(res.error, false);
+  } catch(e) { toast(e.message, false); }
+}
+
+function jurorMatchCard(m, myScore) {
+  const teamA=m.teamAName||m.teamA||'Equipo A';
+  const teamB=m.teamBName||m.teamB||'Equipo B';
+  const logoA=m.teamALogoUrl||''; const logoB=m.teamBLogoUrl||'';
+  const saved=myScore?`<span class="tag tag-green">Enviado: ${myScore.scoreA} – ${myScore.scoreB}</span>`:'';
+  const lh=(logo,name)=>logo
+    ?`<img src="${logo}" style="width:30px;height:30px;border-radius:50%;object-fit:cover">`
+    :`<div style="width:30px;height:30px;border-radius:50%;background:var(--g20);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px">${name.charAt(0)}</div>`;
+  return `
+  <div class="vote-card" style="max-width:600px">
+    <div class="vote-card-title">
+      ${lh(logoA,teamA)}<span style="margin-left:6px">${esc(teamA)}</span>
+      <span style="color:var(--g);font-size:11px;margin:0 8px">vs</span>
+      ${lh(logoB,teamB)}<span style="margin-left:6px">${esc(teamB)}</span>
+      ${saved}
     </div>
-  </div>
-</div>
-
-<!-- ADMIN PAGE -->
-<div id="pg-admin" class="pg">
-  <div class="asec">
-    <div class="cont">
-      <div style="text-align:center;margin-bottom:32px">
-        <div style="font-family:var(--fl);font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--g);margin-bottom:8px">Acceso restringido</div>
-        <h2 style="font-family:var(--fd);font-size:clamp(24px,5vw,50px);color:var(--wh);letter-spacing:.02em">PANEL ADMIN</h2>
-      </div>
-      <div class="abox">
-        <div id="admin-login-box">
-          <div style="font-family:var(--fl);font-size:13px;color:var(--steel);margin-bottom:18px">Usa el botón <strong style="color:var(--wh)">🔐 Acceder</strong> con tu token de admin.</div>
-          <button class="btn bp" style="justify-content:center;width:100%" onclick="showLoginOverlay()">🔐 Abrir login</button>
-        </div>
-        <div id="admin-panel" style="display:none">
-          <div class="awel">
-            <div><div class="awel-name" id="awel-name"></div>
-            <div style="font-family:var(--fl);font-size:11px;color:var(--steel);margin-top:2px">Panel de administración del torneo</div></div>
-            <button class="btn bg bsm" onclick="logout()">Cerrar sesión</button>
-          </div>
-          <div class="atabs">
-            <button class="atab" data-atab="phase"   onclick="showAdminTab('phase')">🎯 Fases del torneo</button>
-            <button class="atab" data-atab="pymes"   onclick="showAdminTab('pymes')">📋 PyMEs</button>
-            <button class="atab" data-atab="jurados" onclick="showAdminTab('jurados')">👥 Jurados</button>
-            <button class="atab" data-atab="control" onclick="showAdminTab('control')">✏️ Control</button>
-          </div>
-          <div id="atab-phase"   style="display:none"></div>
-          <div id="atab-pymes"   style="display:none"></div>
-          <div id="atab-jurados" style="display:none"></div>
-          <div id="atab-control" style="display:none"></div>
-          <div class="msg" id="amsg" style="margin-top:16px"></div>
-        </div>
-      </div>
+    <div class="score-wrap">
+      <label>${esc(teamA)}</label>
+      <input type="number" id="scoreA-${m.id}" min="0" max="10" step="0.1"
+        value="${myScore?myScore.scoreA:''}" placeholder="0-10"/>
     </div>
-  </div>
-</div>
+    <div class="score-wrap" style="margin-top:8px">
+      <label>${esc(teamB)}</label>
+      <input type="number" id="scoreB-${m.id}" min="0" max="10" step="0.1"
+        value="${myScore?myScore.scoreB:''}" placeholder="0-10"/>
+    </div>
+    <button class="btn btn-primary btn-sm" style="margin-top:14px" onclick="submitJurorScore('${m.id}')">
+      ${myScore?'↻ Actualizar puntaje':'✓ Enviar puntaje'}
+    </button>
+  </div>`;
+}
 
-<!-- FOOTER -->
-<footer class="foot">
-  <div class="fbr">ADMAIORA <em>MÉXICO</em></div>
-  <div class="fmeta">Innovation Cup 2026 · B2AI Disruptive Challenge · 27 Mayo 2026 · Cámara de Diputados CDMX</div>
-  <div id="lupd"></div>
-</footer>
+async function submitJurorScore(matchId) {
+  const a=parseFloat(document.getElementById(`scoreA-${matchId}`).value);
+  const b=parseFloat(document.getElementById(`scoreB-${matchId}`).value);
+  if (isNaN(a)||isNaN(b)||a<0||a>10||b<0||b>10) { toast('Puntajes fuera de rango (0-10)',false); return; }
+  try {
+    const res=await apiCall({ action:'submitScore', token:SESSION.token, matchId, scoreA:String(a), scoreB:String(b) });
+    if (res.ok) { toast('Puntaje enviado ✓',true); renderJurorView(); }
+    else toast(res.error,false);
+  } catch(e) { toast(e.message,false); }
+}
+
+/* ══════════════════════════════════════════
+   MODAL HELPERS
+══════════════════════════════════════════ */
+function openModal(id){ document.getElementById(id).classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(el=>{
+  el.addEventListener('click',e=>{ if(e.target===el) el.classList.remove('open'); });
+});
+
+/* ══════════════════════════════════════════
+   TOAST & ALERT
+══════════════════════════════════════════ */
+let toastTimer;
+function toast(msg, ok) {
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.className='show '+(ok?'ok':'err');
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.className='',3000);
+}
+function showAlert(el,msg,type) {
+  el.textContent=msg;
+  el.className='alert alert-'+(type==='error'?'error':type==='success'?'success':'info');
+  el.style.display='block';
+}
+function hideAlert(el){ if(el) el.style.display='none'; }
+
+/* ══════════════════════════════════════════
+   UTILS
+══════════════════════════════════════════ */
+function esc(s){ if(!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+/* ══════════════════════════════════════════
+   INIT
+══════════════════════════════════════════ */
+(async()=>{
+  await refresh();
+  refreshTimer=setInterval(refresh, CFG.REFRESH_INTERVAL);
+})();
+</script>
 </body>
 </html>
