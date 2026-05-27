@@ -685,6 +685,9 @@ const CFG = {
     { jurorId: 'j04', name: 'Jurado 4' },
     { jurorId: 'j05', name: 'Jurado 5' },
   ],
+  // Tokens generales: cualquiera con el link puede votar y los votos SE ACUMULAN
+  // Cada sesión genera un ID único para que no se sobreescriban
+  GENERAL_TOKENS: ['voto', 'vota', 'innova2026'],
   ADMIN_TOKEN: 'sp01',
 };
 
@@ -1141,28 +1144,39 @@ async function doLogin() {
 
   // 1) Verificar admin localmente
   if (token === CFG.ADMIN_TOKEN) {
-    SESSION = { token, role:'admin', name:'Admin' };
+    SESSION = { token, role:'admin', name:'Admin', backendToken: token };
     document.getElementById('adminNavBtn').style.display='';
     document.getElementById('jurorNavBtn').style.display='none';
     document.getElementById('adminWelcome').textContent='Admin';
     toast('Bienvenido, Admin 🛡', true); showSection('admin'); return;
   }
 
-  // 2) Verificar jurado localmente (sin backend)
+  // 2) Token GENERAL — cualquiera puede votar, cada sesión genera ID único
+  if (CFG.GENERAL_TOKENS.includes(token)) {
+    // ID único por sesión: "voto_" + 6 chars aleatorios
+    const uid = token + '_' + Math.random().toString(36).slice(2,8);
+    SESSION = { token, role:'juror', name:'Votante', backendToken: uid, isGeneral: true };
+    document.getElementById('jurorNavBtn').style.display='';
+    document.getElementById('adminNavBtn').style.display='none';
+    toast('¡Listo! Ya puedes votar 🗳️', true);
+    showSection('juror'); return;
+  }
+
+  // 3) Verificar jurado individual localmente (sin backend)
   const localJuror = CFG.JURORS.find(j => j.jurorId === token);
   if (localJuror) {
-    SESSION = { token, role:'juror', name: localJuror.name };
+    SESSION = { token, role:'juror', name: localJuror.name, backendToken: token };
     document.getElementById('jurorNavBtn').style.display='';
     document.getElementById('adminNavBtn').style.display='none';
     toast('Bienvenido, ' + localJuror.name + ' ⚖️', true);
     showSection('juror'); return;
   }
 
-  // 3) Intentar verificación remota (fallback)
+  // 4) Intentar verificación remota (fallback)
   try {
     const res = await apiCall({ action:'verifyJuror', token });
     if (res.ok) {
-      SESSION = { token, role:'juror', name: res.name || token };
+      SESSION = { token, role:'juror', name: res.name || token, backendToken: token };
       document.getElementById('jurorNavBtn').style.display='';
       document.getElementById('adminNavBtn').style.display='none';
       toast('Bienvenido, ' + (res.name||token) + ' ⚖️', true);
@@ -1480,11 +1494,20 @@ async function loadAdminJurados() {
   const el = document.getElementById('adminJuradosList');
   const base = window.location.href.split('?')[0];
   const list = CFG.JURORS;
+  const generalLink = base + '?token=voto';
 
   el.innerHTML = `
-    <div class="alert alert-info" style="margin-bottom:16px;font-size:12px">
-      ℹ️ Comparte el link directo a cada jurado. Al abrirlo entran automáticamente sin escribir nada.
-    </div>` +
+    <div style="background:rgba(66,247,152,.08);border:1px solid rgba(66,247,152,.3);border-radius:var(--r2);padding:16px;margin-bottom:20px">
+      <div style="font-weight:700;font-size:14px;color:var(--accent);margin-bottom:8px">🗳️ Link de Votación General</div>
+      <div style="font-size:12px;color:var(--txt2);margin-bottom:10px">
+        Comparte este único link. Cualquiera que lo abra puede votar y los votos se acumulan independientemente.
+      </div>
+      <div style="padding:8px 12px;background:#000;border-radius:5px;font-size:12px;color:var(--txt2);word-break:break-all;border:1px solid var(--border);margin-bottom:10px">
+        🔗 ${generalLink}
+      </div>
+      <button class="btn btn-primary" onclick="copyText('${generalLink}', this)">📋 Copiar link general</button>
+    </div>
+    <div style="font-size:12px;color:var(--txt2);margin-bottom:12px">— O comparte links individuales por jurado —</div>` +
     list.map(j => {
       const link = base + '?token=' + encodeURIComponent(j.jurorId);
       return `
@@ -1659,17 +1682,30 @@ async function submitOneGroupScore(teamId) {
   const input = document.getElementById(`gscore-${teamId}`);
   const val = parseFloat(input.value);
   if (isNaN(val) || val < 0 || val > 10) { toast('Puntaje inválido (0-10)', false); return; }
+  // Usar backendToken (único por sesión para tokens generales)
+  const tok = SESSION.backendToken || SESSION.token;
   try {
     const res = await apiCall({
       action: 'submitScore',
-      token: SESSION.token,
+      token: tok,
       matchId: 'GRP_' + teamId,
       scoreA: String(val),
       scoreB: '0'
     });
-    if (res.ok) { toast('Puntaje enviado ✓', true); renderJurorView(); }
-    else toast(res.error, false);
-  } catch(e) { toast(e.message, false); }
+    if (res.ok || res._fallback) {
+      // Marcar visualmente como enviado sin re-renderizar todo
+      const btn = document.querySelector(`button[onclick="submitOneGroupScore('${teamId}')"]`);
+      if (btn) btn.textContent = '✓ Guardado';
+      const card = input.closest('.vote-card');
+      const tag = card && card.querySelector('.tag-green');
+      if (tag) { tag.textContent = '✓ ' + val + '/10'; }
+      else if (card) {
+        const titleDiv = card.querySelector('.vote-card-title');
+        if (titleDiv) titleDiv.insertAdjacentHTML('beforeend',`<span class="tag tag-green">✓ ${val}/10</span>`);
+      }
+      toast('✓ Puntaje enviado', true);
+    } else toast(res.error || 'Error al enviar', false);
+  } catch(e) { toast('Error: ' + e.message, false); }
 }
 
 function jurorMatchCard(m, myScore) {
@@ -1708,9 +1744,10 @@ async function submitJurorScore(matchId) {
   const a=parseFloat(document.getElementById(`scoreA-${matchId}`).value);
   const b=parseFloat(document.getElementById(`scoreB-${matchId}`).value);
   if (isNaN(a)||isNaN(b)||a<0||a>10||b<0||b>10) { toast('Puntajes fuera de rango (0-10)',false); return; }
+  const tok = SESSION.backendToken || SESSION.token;
   try {
-    const res=await apiCall({ action:'submitScore', token:SESSION.token, matchId, scoreA:String(a), scoreB:String(b) });
-    if (res.ok) { toast('Puntaje enviado ✓',true); renderJurorView(); }
+    const res=await apiCall({ action:'submitScore', token:tok, matchId, scoreA:String(a), scoreB:String(b) });
+    if (res.ok || res._fallback) { toast('Puntaje enviado ✓',true); renderJurorView(); }
     else toast(res.error,false);
   } catch(e) { toast(e.message,false); }
 }
