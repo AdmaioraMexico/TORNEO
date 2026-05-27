@@ -1405,27 +1405,72 @@ async function saveBracket() {
    ADMIN — ADVANCE MATCH
 ══════════════════════════════════════════ */
 function openAdvanceModal(matchId) {
-  const m=STATE.bracket[matchId]||{};
-  const teamA=m.teamAName||m.teamA||'Equipo A';
-  const teamB=m.teamBName||m.teamB||'Equipo B';
-  const logoA=m.teamALogoUrl||''; const logoB=m.teamBLogoUrl||'';
-  document.getElementById('advanceModalTitle').textContent=`Avanzar: ${matchId}`;
-  document.getElementById('advanceAlert').style.display='none';
-  const mkBtn=(tid,name,logo)=>{
-    const lh=logo?`<img src="${logo}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;margin-right:8px" onerror="this.style.display='none'">`:`<div style="width:30px;height:30px;border-radius:50%;background:var(--g20);display:flex;align-items:center;justify-content:center;margin-right:8px;font-weight:700">${name.charAt(0)}</div>`;
-    return `<button class="btn btn-ghost" style="justify-content:flex-start;padding:12px 16px" onclick="doAdvanceMatch('${matchId}','${tid}')">${lh}<span>${esc(name)}</span></button>`;
+  // Buscar en LOCAL_BRACKET primero, luego STATE.bracket
+  const combined = { ...(STATE.bracket||{}), ...LOCAL_BRACKET };
+  const m = combined[matchId] || {};
+  const teamA = m.teamAName || m.teamA || 'Equipo A';
+  const teamB = m.teamBName || m.teamB || 'Equipo B';
+  const logoA = m.teamALogoUrl||''; const logoB = m.teamBLogoUrl||'';
+  document.getElementById('advanceModalTitle').textContent = `Avanzar: ${matchId}`;
+  document.getElementById('advanceAlert').style.display = 'none';
+  const mkBtn = (tid, name, logo) => {
+    const lh = logo
+      ? `<img src="${logo}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;margin-right:8px" onerror="this.style.display='none'">`
+      : `<div style="width:30px;height:30px;border-radius:50%;background:var(--accent-dim);border:1px solid var(--accent);display:flex;align-items:center;justify-content:center;margin-right:8px;font-weight:700;font-size:14px;color:var(--accent)">${name.charAt(0)}</div>`;
+    // Pasar nombre como segundo argumento para avance local
+    return `<button class="btn btn-ghost" style="justify-content:flex-start;padding:12px 16px;width:100%;text-align:left" onclick="doAdvanceMatch('${matchId}','${esc(tid)}','${esc(name)}')">${lh}<span style="font-size:14px">${esc(name)}</span></button>`;
   };
-  document.getElementById('advanceWinnerBtns').innerHTML=mkBtn(m.teamA||teamA,teamA,logoA)+mkBtn(m.teamB||teamB,teamB,logoB);
+  document.getElementById('advanceWinnerBtns').innerHTML =
+    mkBtn(m.teamA||teamA, teamA, logoA) + mkBtn(m.teamB||teamB, teamB, logoB);
   openModal('advanceModal');
 }
 
-async function doAdvanceMatch(matchId,winner) {
-  const al=document.getElementById('advanceAlert');
+async function doAdvanceMatch(matchId, winner, winnerName) {
+  const al = document.getElementById('advanceAlert');
+  const combined = { ...(STATE.bracket||{}), ...LOCAL_BRACKET };
+  const m = combined[matchId] || {};
+
+  // Determinar loser
+  const loser    = winner === m.teamA ? m.teamB : m.teamA;
+  const loserName = winner === m.teamA ? (m.teamBName||m.teamB) : (m.teamAName||m.teamA);
+  const wName    = winnerName || winner;
+
+  // 1) Avanzar localmente de inmediato — sin esperar backend
+  LOCAL_BRACKET[matchId] = { ...m, winner, winnerName: wName };
+
+  // Determinar siguiente partido y slot
+  if (matchId === 'QF1') {
+    LOCAL_BRACKET['FIN'] = LOCAL_BRACKET['FIN'] || {};
+    LOCAL_BRACKET['FIN'].teamA = winner;
+    LOCAL_BRACKET['FIN'].teamAName = wName;
+  } else if (matchId === 'QF2') {
+    LOCAL_BRACKET['FIN'] = LOCAL_BRACKET['FIN'] || {};
+    LOCAL_BRACKET['FIN'].teamB = winner;
+    LOCAL_BRACKET['FIN'].teamBName = wName;
+  }
+
+  // Si ya tenemos finalistas, activar Fase 3 localmente
+  const fin = LOCAL_BRACKET['FIN'] || {};
+  if (fin.teamA && fin.teamB && LOCAL_PHASE !== '3') {
+    LOCAL_PHASE = '3'; _lastPhase = '3'; updatePhaseBadge('3');
+  }
+
+  // Re-renderizar bracket inmediatamente
+  const effectiveBracket = { ...(STATE.bracket||{}), ...LOCAL_BRACKET };
+  const effectivePhase = LOCAL_PHASE || STATE.phase || '2';
+  renderBracket(effectiveBracket, effectivePhase);
+  closeModal('advanceModal');
+  toast('✓ ' + wName + ' avanza', true);
+
+  // 2) Enviar al backend en segundo plano
   try {
-    const res=await apiCall({ action:'adminAdvanceMatch', token:SESSION.token, matchId, winner });
-    if (res.ok) { toast('Ganador registrado ✓',true); closeModal('advanceModal'); refresh(); }
-    else showAlert(al,res.error||'Error','error');
-  } catch(e) { showAlert(al,e.message,'error'); }
+    await apiCall({ action:'adminAdvanceMatch', token:SESSION.token, matchId, winner });
+  } catch(e) {}
+  // Si ya hay finalistas, avanzar a fase 3 en backend
+  if (fin.teamA && fin.teamB) {
+    try { await apiCall({ action:'adminSetPhase', token:SESSION.token, phase:'3' }); } catch(e) {}
+  }
+  setTimeout(()=>{ refresh(); }, 2500);
 }
 
 /* ══════════════════════════════════════════
