@@ -938,16 +938,26 @@ function renderGroupStage(bracket) {
   } else { Object.assign(matchMap, stateMatches); }
   Object.keys(bracket).forEach(k => { if (k.startsWith('GRP_') && !matchMap[k]) matchMap[k] = bracket[k]; });
 
-  // 3) Construir tabla de scores usando rankings > matchMap
+  // 3) Construir tabla de scores usando: LOCAL > rankings > matchMap
   const scored = companies.map(c => {
     let score = null;
-    if (rankingsMap[c.teamId] !== undefined) {
+    let voteCount = null;
+
+    // Prioridad 1: scores locales acumulados en esta sesión
+    if (LOCAL_GROUP_SCORES[c.teamId] && LOCAL_GROUP_SCORES[c.teamId].votes.length > 0) {
+      score = LOCAL_GROUP_SCORES[c.teamId].avg;
+      voteCount = LOCAL_GROUP_SCORES[c.teamId].votes.length;
+    }
+    // Prioridad 2: rankings del backend
+    else if (rankingsMap[c.teamId] !== undefined) {
       score = rankingsMap[c.teamId];
-    } else {
+    }
+    // Prioridad 3: matchMap
+    else {
       const entry = matchMap['GRP_' + c.teamId];
       if (entry && entry.scoreA !== undefined && entry.scoreA !== '') score = parseFloat(entry.scoreA);
     }
-    return { ...c, score };
+    return { ...c, score, voteCount };
   }).sort((a, b) => {
     if (a.score === null && b.score === null) return 0;
     if (a.score === null) return 1;
@@ -992,7 +1002,9 @@ function renderGroupStage(bracket) {
         <div style="font-weight:600;font-size:13px">${esc(c.empresa)}</div>
         <div style="font-size:11px;color:var(--txt2)">${esc(c.founder||'')}</div>
       </div></div></td>
-      <td class="center">${hasScore ? `<span class="score-big">${parseFloat(score).toFixed(2)}</span>` : '<span class="score-null">—</span>'}</td>
+      <td class="center">${hasScore
+        ? `<span class="score-big">${parseFloat(score).toFixed(2)}</span>${c.voteCount ? `<div style="font-size:10px;color:var(--txt2);margin-top:2px">${c.voteCount} voto${c.voteCount!==1?'s':''}</div>` : ''}`
+        : '<span class="score-null">—</span>'}</td>
       <td class="center">${isQual
         ? '<span class="tag tag-green">✓ Clasifica</span>'
         : '<span class="tag tag-gray">Eliminada</span>'
@@ -1063,6 +1075,22 @@ async function refresh() {
 // Estado local del bracket para override inmediato sin esperar al backend
 let LOCAL_BRACKET = {};
 let LOCAL_PHASE = null;
+
+// Puntajes locales acumulados: { teamId: [score1, score2, ...] }
+// Se llenan cuando cualquier jurado/votante envía un puntaje desde ESTE navegador
+// Se usan para mostrar scores en tiempo real en el bracket aunque el backend no responda
+let LOCAL_GROUP_SCORES = {};  // { teamId: { votes: [8,7,9], sum: 24, avg: 8 } }
+
+function recordLocalScore(teamId, score) {
+  if (!LOCAL_GROUP_SCORES[teamId]) LOCAL_GROUP_SCORES[teamId] = { votes: [], sum: 0 };
+  LOCAL_GROUP_SCORES[teamId].votes.push(score);
+  LOCAL_GROUP_SCORES[teamId].sum += score;
+  LOCAL_GROUP_SCORES[teamId].avg = LOCAL_GROUP_SCORES[teamId].sum / LOCAL_GROUP_SCORES[teamId].votes.length;
+  // Forzar re-render del bracket si está visible
+  if (document.getElementById('sec-bracket').classList.contains('active') && (LOCAL_PHASE||STATE.phase)==='1') {
+    renderGroupStage(STATE.bracket||{});
+  }
+}
 
 /* ══════════════════════════════════════════
    REGISTRATION
@@ -1697,7 +1725,10 @@ async function submitOneGroupScore(teamId) {
   }
   toast('✓ Puntaje registrado', true);
 
-  // 2) Enviar al backend en segundo plano — silencioso (no mostrar error al usuario)
+  // 2) Registrar localmente para actualizar bracket en tiempo real
+  recordLocalScore(teamId, val);
+
+  // 3) Enviar al backend en segundo plano — silencioso (no mostrar error al usuario)
   const tok = SESSION.backendToken || SESSION.token;
   // Intentar GET primero, luego POST no-cors
   const params = { action:'submitScore', token:tok, matchId:'GRP_'+teamId, scoreA:String(val), scoreB:'0' };
